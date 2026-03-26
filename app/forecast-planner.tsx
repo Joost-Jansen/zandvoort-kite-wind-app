@@ -22,6 +22,31 @@ type ForecastPlannerProps = {
   }>;
 };
 
+const HEAT_PATCH_LAYOUTS = Array.from({ length: 12 }, (_, index) => {
+  const column = index % 4;
+  const row = Math.floor(index / 4);
+
+  return {
+    left: `${-6 + column * 24 + (row % 2 === 0 ? 0 : 4)}%`,
+    top: `${6 + row * 26 + (column % 2 === 0 ? 0 : 4)}%`,
+    width: `${24 + ((index * 3) % 8)}%`,
+    height: `${18 + ((index * 5) % 9)}%`,
+    animationDelay: `${index * 0.45}s`,
+  };
+});
+
+const FLOW_LINE_LAYOUTS = Array.from({ length: 36 }, (_, index) => {
+  const column = index % 6;
+  const row = Math.floor(index / 6);
+
+  return {
+    left: `${-10 + column * 18 + (row % 2 === 0 ? 0 : 5)}%`,
+    top: `${8 + row * 14 + (column % 2 === 0 ? 0 : 2)}%`,
+    width: `${14 + ((index * 7) % 10)}%`,
+    animationDelay: `-${(row * 0.7 + column * 0.45).toFixed(2)}s`,
+  };
+});
+
 function formatWind(value: number) {
   return `${value.toFixed(1)} kn`;
 }
@@ -77,10 +102,12 @@ function getHeatStrengthClass(windKnots: number) {
 function getWindOverlayStyle(windKnots: number, directionDegrees: number) {
   const normalizedStrength = Math.min(Math.max((windKnots - 8) / 20, 0.2), 1);
   const flowDuration = Math.max(2.4, 5.8 - normalizedStrength * 2.2);
-  const tintOpacity = 0.32 + normalizedStrength * 0.34;
-  const streakOpacity = 0.28 + normalizedStrength * 0.34;
-  const heatOpacity = 0.32 + normalizedStrength * 0.3;
-  const arrowOpacity = 0.38 + normalizedStrength * 0.48;
+  const tintOpacity = 0.44 + normalizedStrength * 0.4;
+  const streakOpacity = 0.4 + normalizedStrength * 0.44;
+  const heatOpacity = 0.46 + normalizedStrength * 0.34;
+  const arrowOpacity = 0.55 + normalizedStrength * 0.4;
+  const lineThickness = 2 + normalizedStrength * 3;
+  const arrowSize = 0.8 + normalizedStrength * 0.45;
 
   const overlayStyle: CSSProperties & Record<string, string> = {
     "--wind-angle": `${directionDegrees}deg`,
@@ -90,6 +117,8 @@ function getWindOverlayStyle(windKnots: number, directionDegrees: number) {
     "--streak-opacity": `${streakOpacity}`,
     "--heat-opacity": `${heatOpacity}`,
     "--arrow-opacity": `${arrowOpacity}`,
+    "--line-thickness": `${lineThickness}px`,
+    "--arrow-size": `${arrowSize}rem`,
   };
 
   return overlayStyle;
@@ -122,8 +151,6 @@ export function ForecastPlanner({ forecast, location, locations, spotRankings }:
   const favorableWeekends = favorableDays.filter((day) => day.weekend).length;
   const bestWeekendDay = favorableDays.find((day) => day.weekend);
   const topPlaces = spotRankings.slice(0, 5);
-  const heatPatches = Array.from({ length: 12 }, (_, index) => index + 1);
-  const flowLines = Array.from({ length: 28 }, (_, index) => index + 1);
   const heatScale = [35, 27, 19, 11];
 
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
@@ -137,7 +164,7 @@ export function ForecastPlanner({ forecast, location, locations, spotRankings }:
   const selectedHour =
     selectedDay.daylightHours.find((hour) => hour.time === selectedHourTime) ?? selectedDay.daylightHours[0];
   const activeFlowLineCount =
-    selectedHour.windKnots >= 24 ? 28 : selectedHour.windKnots >= 19 ? 20 : selectedHour.windKnots >= 15 ? 14 : 8;
+    selectedHour.windKnots >= 24 ? 36 : selectedHour.windKnots >= 19 ? 28 : selectedHour.windKnots >= 15 ? 18 : 8;
   const activeHeatPatchCount =
     selectedHour.windKnots >= 24 ? 12 : selectedHour.windKnots >= 19 ? 9 : selectedHour.windKnots >= 15 ? 7 : 4;
 
@@ -226,18 +253,20 @@ export function ForecastPlanner({ forecast, location, locations, spotRankings }:
             <div className="wind-overlay-vector" style={getWindOverlayStyle(selectedHour.windKnots, selectedHour.directionDegrees)}>
               <div className="wind-overlay-tint" />
               <div className="wind-heat-layer">
-                {heatPatches.map((patch) => (
+                {HEAT_PATCH_LAYOUTS.map((patch, index) => (
                   <span
-                    className={`wind-heat-patch patch-${patch} ${patch <= activeHeatPatchCount ? "is-active" : "is-muted"}`}
-                    key={`patch-${patch}`}
+                    className={`wind-heat-patch ${index < activeHeatPatchCount ? "is-active" : "is-muted"}`}
+                    key={`patch-${index}`}
+                    style={patch}
                   />
                 ))}
               </div>
               <div className="wind-flow-layer">
-                {flowLines.map((line) => (
+                {FLOW_LINE_LAYOUTS.map((line, index) => (
                   <span
-                    className={`wind-flow-line line-${line} ${line <= activeFlowLineCount ? "is-active" : "is-muted"}`}
-                    key={`line-${line}`}
+                    className={`wind-flow-line ${index < activeFlowLineCount ? "is-active" : "is-muted"}`}
+                    key={`line-${index}`}
+                    style={line}
                   >
                     <span className="wind-flow-arrow">➜</span>
                   </span>
