@@ -76,12 +76,18 @@ function getHeatStrengthClass(windKnots: number) {
 
 function getWindOverlayStyle(windKnots: number, directionDegrees: number) {
   const normalizedStrength = Math.min(Math.max((windKnots - 8) / 20, 0.2), 1);
-  const streamLength = 120 + normalizedStrength * 140;
+  const flowDuration = Math.max(2.4, 5.8 - normalizedStrength * 2.2);
+  const tintOpacity = 0.18 + normalizedStrength * 0.2;
+  const streakOpacity = 0.14 + normalizedStrength * 0.18;
+  const heatOpacity = 0.2 + normalizedStrength * 0.22;
 
   const overlayStyle: CSSProperties & Record<string, string> = {
     "--wind-angle": `${directionDegrees}deg`,
     "--wind-strength": `${normalizedStrength}`,
-    "--stream-length": `${streamLength}px`,
+    "--flow-duration": `${flowDuration}s`,
+    "--tint-opacity": `${tintOpacity}`,
+    "--streak-opacity": `${streakOpacity}`,
+    "--heat-opacity": `${heatOpacity}`,
   };
 
   return overlayStyle;
@@ -114,7 +120,9 @@ export function ForecastPlanner({ forecast, location, locations, spotRankings }:
   const favorableWeekends = favorableDays.filter((day) => day.weekend).length;
   const bestWeekendDay = favorableDays.find((day) => day.weekend);
   const topPlaces = spotRankings.slice(0, 5);
-  const waveBands = ["one", "two", "three", "four", "five"];
+  const heatPatches = Array.from({ length: 9 }, (_, index) => index + 1);
+  const flowLines = Array.from({ length: 18 }, (_, index) => index + 1);
+  const heatScale = [35, 27, 19, 11];
 
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const selectedDay = forecast[selectedDayIndex] ?? forecast[0];
@@ -210,13 +218,23 @@ export function ForecastPlanner({ forecast, location, locations, spotRankings }:
               title={`Map of ${location.name}`}
             />
             <div className="wind-overlay-vector" style={getWindOverlayStyle(selectedHour.windKnots, selectedHour.directionDegrees)}>
-              <div className="wind-overlay-field">
-                {waveBands.map((band) => (
-                  <div className={`wind-wave-row row-${band}`} key={band}>
-                    <span className="wind-wave-segment" />
-                    <span className="wind-wave-segment" />
-                    <span className="wind-wave-segment" />
-                    <span className="wind-wave-segment" />
+              <div className="wind-overlay-tint" />
+              <div className="wind-heat-layer">
+                {heatPatches.map((patch) => (
+                  <span className={`wind-heat-patch patch-${patch}`} key={`patch-${patch}`} />
+                ))}
+              </div>
+              <div className="wind-flow-layer">
+                {flowLines.map((line) => (
+                  <span className={`wind-flow-line line-${line}`} key={`line-${line}`} />
+                ))}
+              </div>
+              <div className="wind-overlay-scale" aria-hidden="true">
+                <span className="scale-unit">kn</span>
+                {heatScale.map((value) => (
+                  <div className="scale-row" key={value}>
+                    <span className={`scale-swatch scale-${value}`} />
+                    <strong>{value}</strong>
                   </div>
                 ))}
               </div>

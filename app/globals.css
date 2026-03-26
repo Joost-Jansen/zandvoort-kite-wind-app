@@ -278,20 +278,33 @@ a {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04), transparent 62%);
+  background:
+    linear-gradient(180deg, rgba(8, 23, 54, 0.04), rgba(8, 23, 54, 0.16)),
+    radial-gradient(circle at 18% 30%, rgba(255, 255, 255, 0.08), transparent 45%);
   pointer-events: none;
 }
 
 .map-overlay.is-cool::after {
-  background: radial-gradient(circle at 50% 50%, rgba(115, 167, 193, 0.18), transparent 58%);
+  background:
+    linear-gradient(180deg, rgba(39, 94, 148, 0.12), rgba(23, 70, 110, 0.18)),
+    radial-gradient(circle at 18% 28%, rgba(126, 187, 228, 0.18), transparent 42%),
+    radial-gradient(circle at 70% 70%, rgba(82, 153, 205, 0.14), transparent 38%);
 }
 
 .map-overlay.is-warm::after {
-  background: radial-gradient(circle at 50% 50%, rgba(255, 194, 111, 0.24), transparent 58%);
+  background:
+    linear-gradient(180deg, rgba(36, 95, 141, 0.14), rgba(28, 86, 128, 0.22)),
+    radial-gradient(circle at 20% 28%, rgba(255, 224, 139, 0.18), transparent 38%),
+    radial-gradient(circle at 75% 68%, rgba(155, 218, 129, 0.16), transparent 36%),
+    radial-gradient(circle at 58% 42%, rgba(96, 188, 205, 0.14), transparent 32%);
 }
 
 .map-overlay.is-hot::after {
-  background: radial-gradient(circle at 50% 50%, rgba(255, 148, 102, 0.28), transparent 60%);
+  background:
+    linear-gradient(180deg, rgba(35, 96, 148, 0.18), rgba(24, 78, 126, 0.28)),
+    radial-gradient(circle at 18% 26%, rgba(255, 220, 112, 0.24), transparent 36%),
+    radial-gradient(circle at 68% 64%, rgba(133, 220, 116, 0.22), transparent 34%),
+    radial-gradient(circle at 52% 40%, rgba(99, 196, 210, 0.2), transparent 30%);
 }
 
 .map-frame {
@@ -302,103 +315,194 @@ a {
 
 .wind-overlay-vector {
   position: absolute;
-  inset: 0;
+  .wind-overlay-tint {
   pointer-events: none;
-}
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(68, 132, 181, calc(var(--tint-opacity) * 0.9)), rgba(26, 74, 116, calc(var(--tint-opacity) * 1.2))),
+      radial-gradient(circle at 20% 34%, rgba(138, 215, 255, calc(var(--tint-opacity) * 0.85)), transparent 36%),
+      radial-gradient(circle at 64% 66%, rgba(169, 234, 133, calc(var(--tint-opacity) * 0.8)), transparent 28%),
+      radial-gradient(circle at 56% 40%, rgba(255, 223, 127, calc(var(--tint-opacity) * 0.75)), transparent 24%);
+    mix-blend-mode: multiply;
+  }
 
-.wind-overlay-field {
-  position: absolute;
-  inset: -6%;
-  display: grid;
-  gap: 1rem;
-  justify-items: stretch;
-  align-content: center;
-  transform: rotate(var(--wind-angle));
-  transform-origin: center;
-}
+  .wind-heat-layer {
+    position: absolute;
+    inset: 0;
+  }
 
-.wind-wave-row {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1rem;
-  opacity: 0.78;
-}
+  .wind-heat-patch {
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(26px);
+    opacity: var(--heat-opacity);
+    background: radial-gradient(circle, rgba(255, 228, 120, 0.95), rgba(137, 226, 118, 0.75), rgba(60, 157, 199, 0.2) 72%, transparent 100%);
+    animation: heatPulseField 6.4s ease-in-out infinite;
+  }
 
-.wind-wave-segment {
-  position: relative;
-  display: block;
-  height: 28px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(18, 52, 59, 0.04));
-}
+  .wind-heat-patch.patch-1 {
+    left: -6%;
+    top: 8%;
+    width: 34%;
+    height: 30%;
+  }
 
-.wind-wave-segment::before,
-.wind-wave-segment::after {
-  content: "";
-  position: absolute;
-  left: -20%;
-  width: 140%;
-  height: 11px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 232, 171, 0.55), rgba(18, 52, 59, 0.52), rgba(255, 255, 255, 0));
-  background-size: 180px 100%;
-  box-shadow: 0 0 16px rgba(255, 194, 111, 0.12);
-}
+  .wind-heat-patch.patch-2 {
+    left: 14%;
+    top: 16%;
+    width: 28%;
+    height: 24%;
+    animation-delay: 0.8s;
+  }
 
-.wind-wave-segment::before {
-  top: 4px;
-  animation: windWaveTravel 3s linear infinite;
-}
+  .wind-heat-patch.patch-3 {
+    right: 18%;
+    top: 12%;
+    width: 24%;
+    height: 22%;
+    animation-delay: 1.5s;
+  }
 
-.wind-wave-segment::after {
-  top: 14px;
-  opacity: 0.72;
-  animation: windWaveTravel 4.2s linear infinite reverse;
-}
+  .wind-heat-patch.patch-4 {
+    left: 36%;
+    top: 34%;
+    width: 30%;
+    height: 24%;
+    animation-delay: 1.1s;
+  }
 
-.wind-wave-row.row-two {
-  opacity: 0.68;
-}
+  .wind-heat-patch.patch-5 {
+    left: 56%;
+    top: 44%;
+    width: 26%;
+    height: 22%;
+    animation-delay: 2.4s;
+  }
 
-.wind-wave-row.row-three {
-  opacity: 0.58;
-}
+  .wind-heat-patch.patch-6 {
+    left: 6%;
+    bottom: 10%;
+    width: 34%;
+    height: 28%;
+    animation-delay: 1.8s;
+  }
 
-.wind-wave-row.row-four {
-  opacity: 0.5;
-}
+  .wind-heat-patch.patch-7 {
+    left: 42%;
+    bottom: 8%;
+    width: 30%;
+    height: 24%;
+    animation-delay: 0.5s;
+  }
 
-.wind-wave-row.row-five {
-  opacity: 0.42;
-}
+  .wind-heat-patch.patch-8 {
+    right: -6%;
+    top: 24%;
+    width: 30%;
+    height: 34%;
+    animation-delay: 2.9s;
+  }
 
-.wind-wave-row.row-two .wind-wave-segment::before,
-.wind-wave-row.row-four .wind-wave-segment::before {
-  animation-duration: 3.6s;
-}
+  .wind-heat-patch.patch-9 {
+    right: 4%;
+    bottom: 6%;
+    width: 26%;
+    height: 24%;
+    animation-delay: 1.9s;
+  }
 
-.wind-wave-row.row-three .wind-wave-segment::before,
-.wind-wave-row.row-five .wind-wave-segment::before {
-  animation-duration: 4s;
-}
+  .wind-flow-layer {
+    position: absolute;
+    inset: -12%;
+    transform: rotate(var(--wind-angle));
+    transform-origin: center;
+  }
 
-.wind-wave-row.row-two .wind-wave-segment::after,
-.wind-wave-row.row-four .wind-wave-segment::after {
-  animation-duration: 4.8s;
-}
+  .wind-flow-line {
+    position: absolute;
+    display: block;
+    width: 20%;
+    height: 2px;
+    border-radius: 999px;
+    opacity: var(--streak-opacity);
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 250, 219, 0.88) 38%, rgba(214, 240, 255, 0.8) 58%, transparent 100%);
+    box-shadow: 0 0 10px rgba(214, 240, 255, 0.16);
+    animation: flowDrift var(--flow-duration) linear infinite;
+  }
 
-.wind-wave-row.row-three .wind-wave-segment::after,
-.wind-wave-row.row-five .wind-wave-segment::after {
-  animation-duration: 5.4s;
-}
+  .wind-flow-line::after {
+    content: "";
+    position: absolute;
+    right: 10%;
+    top: 50%;
+    width: 34px;
+    height: 1px;
+    transform: translateY(-50%);
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 248, 205, 0.95));
+  }
 
-.wind-wave-row .wind-wave-segment:nth-child(2) {
-  transform: translateX(4%);
-}
+  .wind-flow-line.line-1 { left: -4%; top: 10%; animation-delay: -0.8s; }
+  .wind-flow-line.line-2 { left: 14%; top: 8%; width: 18%; animation-delay: -2.1s; }
+  .wind-flow-line.line-3 { left: 34%; top: 14%; width: 24%; animation-delay: -1.6s; }
+  .wind-flow-line.line-4 { left: 58%; top: 12%; width: 16%; animation-delay: -3.4s; }
+  .wind-flow-line.line-5 { left: 76%; top: 18%; width: 20%; animation-delay: -1.9s; }
+  .wind-flow-line.line-6 { left: -6%; top: 28%; width: 26%; animation-delay: -4.2s; }
+  .wind-flow-line.line-7 { left: 18%; top: 30%; width: 18%; animation-delay: -2.8s; }
+  .wind-flow-line.line-8 { left: 40%; top: 32%; width: 22%; animation-delay: -0.4s; }
+  .wind-flow-line.line-9 { left: 66%; top: 34%; width: 18%; animation-delay: -3.1s; }
+  .wind-flow-line.line-10 { left: 82%; top: 38%; width: 14%; animation-delay: -1.2s; }
+  .wind-flow-line.line-11 { left: -2%; top: 52%; width: 22%; animation-delay: -2.5s; }
+  .wind-flow-line.line-12 { left: 18%; top: 54%; width: 16%; animation-delay: -4.6s; }
+  .wind-flow-line.line-13 { left: 38%; top: 58%; width: 22%; animation-delay: -0.9s; }
+  .wind-flow-line.line-14 { left: 62%; top: 56%; width: 18%; animation-delay: -3.8s; }
+  .wind-flow-line.line-15 { left: 78%; top: 62%; width: 20%; animation-delay: -1.5s; }
+  .wind-flow-line.line-16 { left: 8%; top: 74%; width: 24%; animation-delay: -2.9s; }
+  .wind-flow-line.line-17 { left: 40%; top: 80%; width: 18%; animation-delay: -4.9s; }
+  .wind-flow-line.line-18 { left: 70%; top: 78%; width: 24%; animation-delay: -0.7s; }
 
-.wind-wave-row .wind-wave-segment:nth-child(3) {
-  transform: translateX(-3%);
+  .wind-overlay-scale {
+    position: absolute;
+    left: 0.85rem;
+    top: 0.85rem;
+    display: grid;
+    gap: 0.28rem;
+    padding: 0.5rem 0.55rem;
+    border-radius: 14px;
+    background: rgba(12, 27, 58, 0.62);
+    color: white;
+    backdrop-filter: blur(8px);
+  }
+
+  .scale-unit {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.72);
+  }
+
+  .scale-row {
+    display: grid;
+    grid-template-columns: 12px auto;
+    gap: 0.35rem;
+    align-items: center;
+  }
+
+  .scale-row strong {
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  .scale-swatch {
+    display: block;
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+  }
+
+  .scale-swatch.scale-35 { background: #f1cf63; }
+  .scale-swatch.scale-27 { background: #91d76b; }
+  .scale-swatch.scale-19 { background: #58b7d5; }
+  .scale-swatch.scale-11 { background: #386ea8; }
 }
 
 .wind-wave-row .wind-wave-segment:nth-child(4) {
@@ -425,9 +529,9 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  padding: 0.55rem 0.7rem;
+  padding: 0.48rem 0.62rem;
   border-radius: 999px;
-  background: rgba(18, 52, 59, 0.78);
+  background: rgba(12, 27, 58, 0.74);
   color: white;
   backdrop-filter: blur(8px);
   animation: windPulse 2.6s ease-in-out infinite;
@@ -447,9 +551,10 @@ a {
   gap: 0.2rem;
   padding: 0.85rem 0.95rem;
   border-radius: 18px;
-  background: rgba(18, 52, 59, 0.82);
+  background: rgba(12, 27, 58, 0.78);
   color: white;
   max-width: 18rem;
+  backdrop-filter: blur(10px);
 }
 
 .wind-overlay-panel span {
@@ -474,11 +579,12 @@ a {
   top: 1rem;
   display: grid;
   gap: 0.15rem;
-  padding: 0.7rem 0.85rem;
+  padding: 0.6rem 0.72rem;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.72);
   color: rgba(18, 52, 59, 0.88);
   max-width: 16rem;
+  backdrop-filter: blur(10px);
 }
 
 .wind-overlay-legend span {
@@ -953,36 +1059,35 @@ a {
   line-height: 1.45;
 }
 
-@keyframes windFlow {
+@keyframes flowDrift {
   from {
-    background-position: 0 0;
+    transform: translateX(-5%);
   }
 
   to {
-    background-position: 140px 0;
+    transform: translateX(18%);
   }
 }
 
-@keyframes windWaveTravel {
-  from {
-    transform: translateX(-12%);
-    background-position: 0 0;
+@keyframes heatPulseField {
+  0%,
+  100% {
+    transform: scale(0.96);
   }
 
-  to {
-    transform: translateX(12%);
-    background-position: 180px 0;
+  50% {
+    transform: scale(1.05);
   }
 }
 
 @keyframes windPulse {
   0%,
   100% {
-    transform: translate(-50%, -50%) scale(0.96);
+    transform: scale(0.96);
   }
 
   50% {
-    transform: translate(-50%, -50%) scale(1.04);
+    transform: scale(1.04);
   }
 }
 
@@ -1074,14 +1179,17 @@ a {
     height: 320px;
   }
 
-  .wind-overlay-field {
-    inset: -4%;
-    gap: 0.8rem;
+  .wind-flow-layer {
+    inset: -10%;
   }
 
-  .wind-wave-row {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.8rem;
+  .wind-flow-line {
+    width: 24%;
+  }
+
+  .wind-overlay-scale {
+    left: 0.75rem;
+    top: 0.75rem;
   }
 }
 
@@ -1150,26 +1258,32 @@ a {
     height: 260px;
   }
 
-  .wind-overlay-field {
-    inset: -2%;
-    gap: 0.65rem;
+  .wind-flow-layer {
+    inset: -8%;
   }
 
-  .wind-wave-row {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.65rem;
+  .wind-flow-line {
+    width: 28%;
+    height: 1.5px;
   }
 
-  .wind-wave-segment {
-    height: 22px;
+  .wind-overlay-scale {
+    left: 0.65rem;
+    top: 0.65rem;
+    padding: 0.42rem 0.45rem;
   }
 
-  .wind-wave-segment::before {
-    top: 3px;
+  .scale-row {
+    grid-template-columns: 10px auto;
   }
 
-  .wind-wave-segment::after {
-    top: 11px;
+  .scale-row strong {
+    font-size: 0.66rem;
+  }
+
+  .scale-swatch {
+    width: 10px;
+    height: 10px;
   }
 
   .wind-overlay-direction-chip {
@@ -1241,9 +1355,10 @@ a {
     height: 230px;
   }
 
-  .wind-wave-row {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
+  .wind-overlay-scale {
+    left: 0.55rem;
+    top: 0.55rem;
+    gap: 0.22rem;
   }
 
   .wind-overlay-panel {
@@ -1254,17 +1369,18 @@ a {
 
   .wind-overlay-legend,
   .wind-overlay-direction-chip {
-    left: 0.55rem;
     right: 0.55rem;
   }
 
   .wind-overlay-legend {
     top: 0.55rem;
+    left: 3.85rem;
   }
 
   .wind-overlay-direction-chip {
     bottom: 0.55rem;
     justify-content: center;
+    left: auto;
   }
 
   .hour-chip {
