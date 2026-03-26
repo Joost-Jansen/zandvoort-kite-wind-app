@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import type { CSSProperties } from "react";
 
 import type { ForecastDay } from "@/lib/kite";
 import type { KiteLocation } from "@/lib/locations";
@@ -12,6 +13,13 @@ type ForecastPlannerProps = {
   forecast: ForecastDay[];
   location: KiteLocation;
   locations: KiteLocation[];
+  spotRankings: Array<{
+    location: KiteLocation;
+    bestDay: ForecastDay;
+    favorableDays: number;
+    favorableWeekends: number;
+    score: number;
+  }>;
 };
 
 function formatWind(value: number) {
@@ -70,11 +78,13 @@ function getWindOverlayStyle(windKnots: number, directionDegrees: number) {
   const normalizedStrength = Math.min(Math.max((windKnots - 8) / 20, 0.2), 1);
   const streamLength = 120 + normalizedStrength * 140;
 
-  return {
+  const overlayStyle: CSSProperties & Record<string, string> = {
     "--wind-angle": `${directionDegrees}deg`,
     "--wind-strength": `${normalizedStrength}`,
     "--stream-length": `${streamLength}px`,
-  } as React.CSSProperties;
+  };
+
+  return overlayStyle;
 }
 
 function buildMapEmbedUrl(location: KiteLocation) {
@@ -86,7 +96,7 @@ function buildMapEmbedUrl(location: KiteLocation) {
   return `https://www.openstreetmap.org/export/embed.html?bbox=${west}%2C${south}%2C${east}%2C${north}&layer=mapnik&marker=${location.latitude}%2C${location.longitude}`;
 }
 
-export function ForecastPlanner({ forecast, location, locations }: ForecastPlannerProps) {
+export function ForecastPlanner({ forecast, location, locations, spotRankings }: ForecastPlannerProps) {
   const favorableDays = useMemo(() => forecast.filter((day) => day.advice.favorable), [forecast]);
   const rankedDays = useMemo(
     () => [...forecast].sort((left, right) => right.averageWindKnots - left.averageWindKnots).slice(0, 3),
@@ -103,6 +113,7 @@ export function ForecastPlanner({ forecast, location, locations }: ForecastPlann
   const nextKiteDay = favorableDays[0];
   const favorableWeekends = favorableDays.filter((day) => day.weekend).length;
   const bestWeekendDay = favorableDays.find((day) => day.weekend);
+  const topPlaces = spotRankings.slice(0, 5);
 
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const selectedDay = forecast[selectedDayIndex] ?? forecast[0];
@@ -180,33 +191,6 @@ export function ForecastPlanner({ forecast, location, locations }: ForecastPlann
         </div>
       </section>
 
-      <section className="insight-strip" aria-label="forecast summary">
-        <article className="insight-card">
-          <span className="insight-label">Interactive map</span>
-          <p>
-            Select a day and hour to update the beach overlay. The arrow, heat glow, and projected wind lane now follow that slot.
-          </p>
-        </article>
-        <article className="insight-card">
-          <span className="insight-label">Weekend logic</span>
-          <p>
-            Weekend cards turn green when the daytime average reaches at least 15 knots, making likely session windows easier to spot.
-          </p>
-        </article>
-        <article className="insight-card">
-          <span className="insight-label">Calendar export</span>
-          <p>
-            The export includes only kite-worthy days, so the .ics file stays focused on realistic session candidates.
-          </p>
-        </article>
-        <article className="insight-card">
-          <span className="insight-label">Google Calendar</span>
-          <p>
-            Copy the feed URL and use Google Calendar&apos;s From URL option to subscribe instead of importing manually each time.
-          </p>
-        </article>
-      </section>
-
       <section className="planning-grid" aria-label="planning extras">
         <article className="planning-card planning-card-map">
           <div className="section-header compact-header">
@@ -269,6 +253,59 @@ export function ForecastPlanner({ forecast, location, locations }: ForecastPlann
           </p>
         </article>
 
+        <div className="priority-stack">
+          <article className="planning-card">
+            <p className="section-eyebrow">Top Dutch spots</p>
+            <h2>Best places in this forecast run.</h2>
+            <div className="spot-ranking-list">
+              {topPlaces.map((entry, index) => (
+                <Link
+                  className={`spot-ranking-item ${entry.location.slug === location.slug ? "is-selected" : ""}`}
+                  href={`/?location=${entry.location.slug}`}
+                  key={entry.location.slug}
+                >
+                  <div className="spot-ranking-index">0{index + 1}</div>
+                  <div className="spot-ranking-copy">
+                    <strong>
+                      {entry.location.shortName} • {formatWind(entry.bestDay.averageWindKnots)}
+                    </strong>
+                    <p>
+                      {entry.bestDay.label} • {entry.favorableDays} kiteable days • {entry.favorableWeekends} weekend shots
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </article>
+
+          <article className="planning-card">
+            <p className="section-eyebrow">Top days here</p>
+            <h2>Best sessions for {location.shortName}.</h2>
+            <div className="ranked-session-list compact-ranked-list">
+              {rankedDays.map((day, index) => (
+                <button
+                  className={`ranked-session ranked-session-button ${day.date === selectedDay.date ? "is-selected" : ""}`}
+                  key={day.date}
+                  onClick={() => setSelectedDayIndex(forecast.findIndex((item) => item.date === day.date))}
+                  type="button"
+                >
+                  <div className="rank-index">0{index + 1}</div>
+                  <div className="rank-copy">
+                    <strong>
+                      {day.label} • {formatWind(day.averageWindKnots)}
+                    </strong>
+                    <p>
+                      {day.advice.label} • Gusts {formatWind(day.averageGustKnots)} • {day.directionLabel}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="planning-grid planning-grid-ranked" aria-label="forecast guidance">
         <article className="planning-card">
           <p className="section-eyebrow">Wind intelligence</p>
           <h2>What stands out in this run.</h2>
@@ -297,50 +334,51 @@ export function ForecastPlanner({ forecast, location, locations }: ForecastPlann
             </div>
           </div>
         </article>
-      </section>
 
-      <section className="planning-grid planning-grid-ranked" aria-label="top sessions">
         <article className="planning-card">
-          <p className="section-eyebrow">Top sessions</p>
-          <h2>Best 3 forecast windows right now.</h2>
-          <div className="ranked-session-list">
-            {rankedDays.map((day, index) => (
-              <button
-                className={`ranked-session ranked-session-button ${day.date === selectedDay.date ? "is-selected" : ""}`}
-                key={day.date}
-                onClick={() => setSelectedDayIndex(forecast.findIndex((item) => item.date === day.date))}
-                type="button"
-              >
-                <div className="rank-index">0{index + 1}</div>
-                <div className="rank-copy">
-                  <strong>
-                    {day.label} • {formatWind(day.averageWindKnots)}
-                  </strong>
-                  <p>
-                    {day.advice.label} • Gusts {formatWind(day.averageGustKnots)} • {day.directionLabel}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </article>
-        <article className="planning-card">
-          <p className="section-eyebrow">Timeline tips</p>
-          <h2>How to scan the forecast fast.</h2>
+          <p className="section-eyebrow">Interactive map</p>
+          <h2>How to read the live overlay.</h2>
           <div className="mini-stat-list">
             <div>
-              <span>Today marker</span>
-              <strong>The first card is highlighted so users know where the live forecast starts.</strong>
+              <span>Animated flow</span>
+              <strong>The moving stream shows wind direction and relative force for the selected hour.</strong>
             </div>
             <div>
-              <span>Month transitions</span>
-              <strong>Month dividers appear automatically when the timeline crosses into a new month.</strong>
+              <span>Map behavior</span>
+              <strong>Select a day, then an hour chip, and the map overlay updates instantly for that slot.</strong>
             </div>
             <div>
-              <span>Drill-down</span>
-              <strong>Select any card, then any hour, to push that specific wind slot into the map overlay.</strong>
+              <span>Calendar export</span>
+              <strong>Exports and feed subscriptions stay location-specific, so each Dutch spot can be tracked separately.</strong>
             </div>
           </div>
+        </article>
+      </section>
+
+      <section className="insight-strip" aria-label="forecast summary">
+        <article className="insight-card">
+          <span className="insight-label">Weekend logic</span>
+          <p>
+            Weekend cards turn green when the daytime average reaches at least 15 knots, making likely session windows easier to spot.
+          </p>
+        </article>
+        <article className="insight-card">
+          <span className="insight-label">Calendar export</span>
+          <p>
+            The export includes only kite-worthy days, so the .ics file stays focused on realistic session candidates.
+          </p>
+        </article>
+        <article className="insight-card">
+          <span className="insight-label">Google Calendar</span>
+          <p>
+            Copy the feed URL and use Google Calendar&apos;s From URL option to subscribe instead of importing manually each time.
+          </p>
+        </article>
+        <article className="insight-card">
+          <span className="insight-label">Nationwide planning</span>
+          <p>
+            The planner now ranks the strongest Dutch kite spots in this forecast run so you can switch locations instead of checking one beach at a time.
+          </p>
         </article>
       </section>
 

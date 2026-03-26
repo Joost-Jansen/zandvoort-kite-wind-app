@@ -249,6 +249,11 @@ a {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.priority-stack {
+  display: grid;
+  gap: 1rem;
+}
+
 .planning-card {
   padding: 1.25rem;
   border: 1px solid rgba(255, 255, 255, 0.45);
@@ -368,6 +373,8 @@ a {
   inset: 0;
   border-radius: 999px;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), rgba(255, 194, 111, 0.28), rgba(18, 52, 59, 0.45));
+  background-size: 140px 100%;
+  animation: windFlow 2.9s linear infinite;
 }
 
 .wind-overlay-stream.stream-two {
@@ -375,9 +382,17 @@ a {
   opacity: 0.45;
 }
 
+.wind-overlay-stream.stream-two::before {
+  animation-duration: 3.4s;
+}
+
 .wind-overlay-stream.stream-three {
   width: calc(var(--stream-length) * 0.48);
   opacity: 0.25;
+}
+
+.wind-overlay-stream.stream-three::before {
+  animation-duration: 4s;
 }
 
 .wind-overlay-arrow {
@@ -394,6 +409,7 @@ a {
   color: white;
   font-size: 0.95rem;
   transform: translateY(-50%);
+  animation: windArrowPulse 1.7s ease-in-out infinite;
 }
 
 .wind-overlay-core {
@@ -406,6 +422,7 @@ a {
   transform: translate(-50%, -50%);
   background: radial-gradient(circle, rgba(255, 194, 111, 0.96), rgba(255, 148, 102, 0.45));
   box-shadow: 0 0 0 calc(12px + (14px * var(--wind-strength))) rgba(255, 148, 102, 0.12);
+  animation: windPulse 2.6s ease-in-out infinite;
 }
 
 .wind-overlay-panel {
@@ -868,6 +885,92 @@ a {
   margin-top: 1rem;
 }
 
+.compact-ranked-list {
+  margin-top: 0.9rem;
+}
+
+.spot-ranking-list {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 0.95rem;
+}
+
+.spot-ranking-item {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 0.85rem;
+  align-items: center;
+  padding: 0.85rem 0.95rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(18, 52, 59, 0.06);
+}
+
+.spot-ranking-item.is-selected {
+  border-color: rgba(255, 148, 102, 0.34);
+  background: rgba(255, 194, 111, 0.24);
+}
+
+.spot-ranking-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(183, 216, 214, 0.32), rgba(255, 194, 111, 0.28));
+  font-family: var(--font-heading), serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.spot-ranking-copy {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.spot-ranking-copy strong,
+.spot-ranking-copy p {
+  margin: 0;
+}
+
+.spot-ranking-copy p {
+  color: rgba(18, 52, 59, 0.7);
+  line-height: 1.45;
+}
+
+@keyframes windFlow {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 140px 0;
+  }
+}
+
+@keyframes windPulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+}
+
+@keyframes windArrowPulse {
+  0%,
+  100% {
+    transform: translateY(-50%) scale(0.96);
+  }
+
+  50% {
+    transform: translateY(-50%) scale(1.06);
+  }
+}
+
 .ranked-session {
   display: grid;
   grid-template-columns: 54px minmax(0, 1fr);
@@ -917,6 +1020,7 @@ a {
 
   .insight-strip,
   .planning-grid,
+  .priority-stack,
   .method-grid,
   .hero-stats,
   .section-header {
