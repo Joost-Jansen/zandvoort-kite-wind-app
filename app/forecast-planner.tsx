@@ -114,6 +114,7 @@ export function ForecastPlanner({ forecast, location, locations, spotRankings }:
   const favorableWeekends = favorableDays.filter((day) => day.weekend).length;
   const bestWeekendDay = favorableDays.find((day) => day.weekend);
   const topPlaces = spotRankings.slice(0, 5);
+  const waveBands = ["one", "two", "three", "four", "five"];
 
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const selectedDay = forecast[selectedDayIndex] ?? forecast[0];
@@ -209,17 +210,20 @@ export function ForecastPlanner({ forecast, location, locations, spotRankings }:
               title={`Map of ${location.name}`}
             />
             <div className="wind-overlay-vector" style={getWindOverlayStyle(selectedHour.windKnots, selectedHour.directionDegrees)}>
-              <div className="wind-overlay-ring" />
-              <div className="wind-overlay-cardinal north">N</div>
-              <div className="wind-overlay-cardinal east">E</div>
-              <div className="wind-overlay-cardinal south">S</div>
-              <div className="wind-overlay-cardinal west">W</div>
-              <div className="wind-overlay-stream stream-one">
-                <span className="wind-overlay-arrow">➜</span>
+              <div className="wind-overlay-field">
+                {waveBands.map((band) => (
+                  <div className={`wind-wave-row row-${band}`} key={band}>
+                    <span className="wind-wave-segment" />
+                    <span className="wind-wave-segment" />
+                    <span className="wind-wave-segment" />
+                    <span className="wind-wave-segment" />
+                  </div>
+                ))}
               </div>
-              <div className="wind-overlay-stream stream-two" />
-              <div className="wind-overlay-stream stream-three" />
-              <div className="wind-overlay-core" />
+              <div className="wind-overlay-direction-chip">
+                <span className="wind-overlay-arrow">➜</span>
+                <strong>{selectedHour.directionLabel}</strong>
+              </div>
             </div>
             <div className="wind-overlay-panel">
               <span>Selected wind slot</span>

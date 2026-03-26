@@ -306,99 +306,106 @@ a {
   pointer-events: none;
 }
 
-.wind-overlay-ring {
+.wind-overlay-field {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 200px;
-  height: 200px;
-  border-radius: 999px;
-  border: 1px solid rgba(18, 52, 59, 0.18);
-  transform: translate(-50%, -50%);
-  background:
-    radial-gradient(circle at center, rgba(255, 255, 255, 0.12), transparent 58%),
-    linear-gradient(transparent calc(50% - 0.5px), rgba(18, 52, 59, 0.12) 0, transparent calc(50% + 0.5px)),
-    linear-gradient(90deg, transparent calc(50% - 0.5px), rgba(18, 52, 59, 0.12) 0, transparent calc(50% + 0.5px));
-}
-
-.wind-overlay-cardinal {
-  position: absolute;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.82);
-  color: rgba(18, 52, 59, 0.82);
-  font-size: 0.74rem;
-  font-weight: 700;
-  transform: translate(-50%, -50%);
-}
-
-.wind-overlay-cardinal.north {
-  left: 50%;
-  top: calc(50% - 112px);
-}
-
-.wind-overlay-cardinal.east {
-  left: calc(50% + 112px);
-  top: 50%;
-}
-
-.wind-overlay-cardinal.south {
-  left: 50%;
-  top: calc(50% + 112px);
-}
-
-.wind-overlay-cardinal.west {
-  left: calc(50% - 112px);
-  top: 50%;
-}
-
-.wind-overlay-stream {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: var(--stream-length);
-  height: 16px;
-  border-radius: 999px;
-  transform: translate(-50%, -50%) rotate(var(--wind-angle));
+  inset: -6%;
+  display: grid;
+  gap: 1rem;
+  justify-items: stretch;
+  align-content: center;
+  transform: rotate(var(--wind-angle));
   transform-origin: center;
 }
 
-.wind-overlay-stream::before {
+.wind-wave-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  opacity: 0.78;
+}
+
+.wind-wave-segment {
+  position: relative;
+  display: block;
+  height: 28px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(18, 52, 59, 0.04));
+}
+
+.wind-wave-segment::before,
+.wind-wave-segment::after {
   content: "";
   position: absolute;
-  inset: 0;
+  left: -20%;
+  width: 140%;
+  height: 11px;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), rgba(255, 194, 111, 0.28), rgba(18, 52, 59, 0.45));
-  background-size: 140px 100%;
-  animation: windFlow 2.9s linear infinite;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 232, 171, 0.55), rgba(18, 52, 59, 0.52), rgba(255, 255, 255, 0));
+  background-size: 180px 100%;
+  box-shadow: 0 0 16px rgba(255, 194, 111, 0.12);
 }
 
-.wind-overlay-stream.stream-two {
-  width: calc(var(--stream-length) * 0.74);
-  opacity: 0.45;
+.wind-wave-segment::before {
+  top: 4px;
+  animation: windWaveTravel 3s linear infinite;
 }
 
-.wind-overlay-stream.stream-two::before {
-  animation-duration: 3.4s;
+.wind-wave-segment::after {
+  top: 14px;
+  opacity: 0.72;
+  animation: windWaveTravel 4.2s linear infinite reverse;
 }
 
-.wind-overlay-stream.stream-three {
-  width: calc(var(--stream-length) * 0.48);
-  opacity: 0.25;
+.wind-wave-row.row-two {
+  opacity: 0.68;
 }
 
-.wind-overlay-stream.stream-three::before {
+.wind-wave-row.row-three {
+  opacity: 0.58;
+}
+
+.wind-wave-row.row-four {
+  opacity: 0.5;
+}
+
+.wind-wave-row.row-five {
+  opacity: 0.42;
+}
+
+.wind-wave-row.row-two .wind-wave-segment::before,
+.wind-wave-row.row-four .wind-wave-segment::before {
+  animation-duration: 3.6s;
+}
+
+.wind-wave-row.row-three .wind-wave-segment::before,
+.wind-wave-row.row-five .wind-wave-segment::before {
   animation-duration: 4s;
 }
 
+.wind-wave-row.row-two .wind-wave-segment::after,
+.wind-wave-row.row-four .wind-wave-segment::after {
+  animation-duration: 4.8s;
+}
+
+.wind-wave-row.row-three .wind-wave-segment::after,
+.wind-wave-row.row-five .wind-wave-segment::after {
+  animation-duration: 5.4s;
+}
+
+.wind-wave-row .wind-wave-segment:nth-child(2) {
+  transform: translateX(4%);
+}
+
+.wind-wave-row .wind-wave-segment:nth-child(3) {
+  transform: translateX(-3%);
+}
+
+.wind-wave-row .wind-wave-segment:nth-child(4) {
+  transform: translateX(6%);
+}
+
 .wind-overlay-arrow {
-  position: absolute;
-  right: -8px;
-  top: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -408,21 +415,28 @@ a {
   background: rgba(18, 52, 59, 0.92);
   color: white;
   font-size: 0.95rem;
-  transform: translateY(-50%);
   animation: windArrowPulse 1.7s ease-in-out infinite;
 }
 
-.wind-overlay-core {
+.wind-overlay-direction-chip {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: calc(28px + (18px * var(--wind-strength)));
-  height: calc(28px + (18px * var(--wind-strength)));
+  right: 1rem;
+  bottom: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.7rem;
   border-radius: 999px;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(255, 194, 111, 0.96), rgba(255, 148, 102, 0.45));
-  box-shadow: 0 0 0 calc(12px + (14px * var(--wind-strength))) rgba(255, 148, 102, 0.12);
+  background: rgba(18, 52, 59, 0.78);
+  color: white;
+  backdrop-filter: blur(8px);
   animation: windPulse 2.6s ease-in-out infinite;
+}
+
+.wind-overlay-direction-chip strong {
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .wind-overlay-panel {
@@ -949,6 +963,18 @@ a {
   }
 }
 
+@keyframes windWaveTravel {
+  from {
+    transform: translateX(-12%);
+    background-position: 0 0;
+  }
+
+  to {
+    transform: translateX(12%);
+    background-position: 180px 0;
+  }
+}
+
 @keyframes windPulse {
   0%,
   100% {
@@ -1014,6 +1040,10 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .hero-text {
+    max-width: none;
+  }
+
   .hero-copy h1 {
     max-width: 12ch;
   }
@@ -1039,6 +1069,20 @@ a {
   .planning-grid-ranked {
     grid-template-columns: 1fr;
   }
+
+  .map-frame {
+    height: 320px;
+  }
+
+  .wind-overlay-field {
+    inset: -4%;
+    gap: 0.8rem;
+  }
+
+  .wind-wave-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.8rem;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1060,8 +1104,27 @@ a {
     padding: 1rem;
   }
 
+  .planning-card,
+  .insight-card,
+  .methodology-panel {
+    padding: 1rem;
+    border-radius: 22px;
+  }
+
   .hero-copy h1 {
     font-size: clamp(2.8rem, 13vw, 4.3rem);
+  }
+
+  .location-chip {
+    min-width: 116px;
+    padding: 0.72rem 0.8rem;
+  }
+
+  .highlight-pill,
+  .mini-stat-list div,
+  .spot-ranking-item,
+  .ranked-session {
+    padding: 0.8rem;
   }
 
   .forecast-card {
@@ -1084,39 +1147,131 @@ a {
   }
 
   .map-frame {
-    height: 280px;
+    height: 260px;
+  }
+
+  .wind-overlay-field {
+    inset: -2%;
+    gap: 0.65rem;
+  }
+
+  .wind-wave-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .wind-wave-segment {
+    height: 22px;
+  }
+
+  .wind-wave-segment::before {
+    top: 3px;
+  }
+
+  .wind-wave-segment::after {
+    top: 11px;
+  }
+
+  .wind-overlay-direction-chip {
+    right: 0.75rem;
+    bottom: 0.75rem;
+    gap: 0.45rem;
+    padding: 0.45rem 0.6rem;
+  }
+
+  .wind-overlay-direction-chip strong {
+    font-size: 0.74rem;
   }
 
   .wind-overlay-panel {
     right: 0.75rem;
     left: 0.75rem;
     max-width: none;
+    bottom: 3.6rem;
+    padding: 0.7rem 0.8rem;
   }
 
   .wind-overlay-legend {
     left: 0.75rem;
-    right: auto;
+    right: 0.75rem;
     top: 0.75rem;
+    max-width: none;
+    padding: 0.55rem 0.7rem;
   }
 
-  .wind-overlay-ring {
-    width: 160px;
-    height: 160px;
+  .wind-overlay-legend strong,
+  .wind-overlay-panel strong {
+    font-size: 0.84rem;
   }
 
-  .wind-overlay-cardinal.north {
-    top: calc(50% - 92px);
+  .hour-chip-row {
+    gap: 0.5rem;
+    padding-top: 0.75rem;
   }
 
-  .wind-overlay-cardinal.east {
-    left: calc(50% + 92px);
+  .hour-chip {
+    min-width: 82px;
+    padding: 0.62rem 0.7rem;
   }
 
-  .wind-overlay-cardinal.south {
-    top: calc(50% + 92px);
+  .spot-ranking-item {
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 0.7rem;
   }
 
-  .wind-overlay-cardinal.west {
-    left: calc(50% - 92px);
+  .spot-ranking-index,
+  .rank-index {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .page-shell {
+    width: calc(100% - 0.75rem);
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(2.3rem, 12vw, 3.2rem);
+  }
+
+  .map-frame {
+    height: 230px;
+  }
+
+  .wind-wave-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .wind-overlay-panel {
+    bottom: 3.35rem;
+    left: 0.55rem;
+    right: 0.55rem;
+  }
+
+  .wind-overlay-legend,
+  .wind-overlay-direction-chip {
+    left: 0.55rem;
+    right: 0.55rem;
+  }
+
+  .wind-overlay-legend {
+    top: 0.55rem;
+  }
+
+  .wind-overlay-direction-chip {
+    bottom: 0.55rem;
+    justify-content: center;
+  }
+
+  .hour-chip {
+    min-width: 76px;
+  }
+
+  .forecast-card {
+    flex-basis: 200px;
   }
 }
