@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import type { CSSProperties } from "react";
 
 import type { ForecastDay } from "@/lib/kite";
 import type { KiteLocation } from "@/lib/locations";
@@ -30,31 +29,6 @@ type ForecastPlannerProps = {
     score: number;
   }>;
 };
-
-const HEAT_PATCH_LAYOUTS = Array.from({ length: 12 }, (_, index) => {
-  const column = index % 4;
-  const row = Math.floor(index / 4);
-
-  return {
-    left: `${-6 + column * 24 + (row % 2 === 0 ? 0 : 4)}%`,
-    top: `${6 + row * 26 + (column % 2 === 0 ? 0 : 4)}%`,
-    width: `${24 + ((index * 3) % 8)}%`,
-    height: `${18 + ((index * 5) % 9)}%`,
-    animationDelay: `${index * 0.45}s`,
-  };
-});
-
-const FLOW_LINE_LAYOUTS = Array.from({ length: 36 }, (_, index) => {
-  const column = index % 6;
-  const row = Math.floor(index / 6);
-
-  return {
-    left: `${-10 + column * 18 + (row % 2 === 0 ? 0 : 5)}%`,
-    top: `${8 + row * 14 + (column % 2 === 0 ? 0 : 2)}%`,
-    width: `${14 + ((index * 7) % 10)}%`,
-    animationDelay: `-${(row * 0.7 + column * 0.45).toFixed(2)}s`,
-  };
-});
 
 function formatWind(value: number) {
   return `${value.toFixed(1)} kn`;
@@ -108,31 +82,6 @@ function getHeatStrengthClass(windKnots: number) {
   return "is-cool";
 }
 
-function getWindOverlayStyle(windKnots: number, directionDegrees: number) {
-  const normalizedStrength = Math.min(Math.max((windKnots - 8) / 20, 0.2), 1);
-  const flowDuration = Math.max(2.4, 5.8 - normalizedStrength * 2.2);
-  const tintOpacity = 0.44 + normalizedStrength * 0.4;
-  const streakOpacity = 0.4 + normalizedStrength * 0.44;
-  const heatOpacity = 0.46 + normalizedStrength * 0.34;
-  const arrowOpacity = 0.55 + normalizedStrength * 0.4;
-  const lineThickness = 2 + normalizedStrength * 3;
-  const arrowSize = 0.8 + normalizedStrength * 0.45;
-
-  const overlayStyle: CSSProperties & Record<string, string> = {
-    "--wind-angle": `${directionDegrees}deg`,
-    "--wind-strength": `${normalizedStrength}`,
-    "--flow-duration": `${flowDuration}s`,
-    "--tint-opacity": `${tintOpacity}`,
-    "--streak-opacity": `${streakOpacity}`,
-    "--heat-opacity": `${heatOpacity}`,
-    "--arrow-opacity": `${arrowOpacity}`,
-    "--line-thickness": `${lineThickness}px`,
-    "--arrow-size": `${arrowSize}rem`,
-  };
-
-  return overlayStyle;
-}
-
 export function ForecastPlanner({ forecast, location, locations, spotRankings }: ForecastPlannerProps) {
   const favorableDays = useMemo(() => forecast.filter((day) => day.advice.favorable), [forecast]);
   const rankedDays = useMemo(
@@ -163,10 +112,6 @@ export function ForecastPlanner({ forecast, location, locations, spotRankings }:
 
   const selectedHour =
     selectedDay.daylightHours.find((hour) => hour.time === selectedHourTime) ?? selectedDay.daylightHours[0];
-  const activeFlowLineCount =
-    selectedHour.windKnots >= 24 ? 36 : selectedHour.windKnots >= 19 ? 28 : selectedHour.windKnots >= 15 ? 18 : 8;
-  const activeHeatPatchCount =
-    selectedHour.windKnots >= 24 ? 12 : selectedHour.windKnots >= 19 ? 9 : selectedHour.windKnots >= 15 ? 7 : 4;
 
   return (
     <main className="page-shell">
@@ -243,42 +188,23 @@ export function ForecastPlanner({ forecast, location, locations, spotRankings }:
           </div>
 
           <div className={`map-frame-wrap map-overlay ${getHeatStrengthClass(selectedHour.windKnots)}`}>
-            <ForecastMap location={location} />
-            <div className="wind-overlay-vector" style={getWindOverlayStyle(selectedHour.windKnots, selectedHour.directionDegrees)}>
-              <div className="wind-overlay-tint" />
-              <div className="wind-heat-layer">
-                {HEAT_PATCH_LAYOUTS.map((patch, index) => (
-                  <span
-                    className={`wind-heat-patch ${index < activeHeatPatchCount ? "is-active" : "is-muted"}`}
-                    key={`patch-${index}`}
-                    style={patch}
-                  />
-                ))}
-              </div>
-              <div className="wind-flow-layer">
-                {FLOW_LINE_LAYOUTS.map((line, index) => (
-                  <span
-                    className={`wind-flow-line ${index < activeFlowLineCount ? "is-active" : "is-muted"}`}
-                    key={`line-${index}`}
-                    style={line}
-                  >
-                    <span className="wind-flow-arrow">➜</span>
-                  </span>
-                ))}
-              </div>
-              <div className="wind-overlay-scale" aria-hidden="true">
-                <span className="scale-unit">kn</span>
-                {heatScale.map((value) => (
-                  <div className="scale-row" key={value}>
-                    <span className={`scale-swatch scale-${value}`} />
-                    <strong>{value}</strong>
-                  </div>
-                ))}
-              </div>
-              <div className="wind-overlay-direction-chip">
-                <span className="wind-overlay-arrow">➜</span>
-                <strong>{selectedHour.directionLabel}</strong>
-              </div>
+            <ForecastMap
+              directionDegrees={selectedHour.directionDegrees}
+              location={location}
+              windKnots={selectedHour.windKnots}
+            />
+            <div className="wind-overlay-scale" aria-hidden="true">
+              <span className="scale-unit">kn</span>
+              {heatScale.map((value) => (
+                <div className="scale-row" key={value}>
+                  <span className={`scale-swatch scale-${value}`} />
+                  <strong>{value}</strong>
+                </div>
+              ))}
+            </div>
+            <div className="wind-overlay-direction-chip">
+              <span className="wind-overlay-arrow">➜</span>
+              <strong>{selectedHour.directionLabel}</strong>
             </div>
             <div className="wind-overlay-panel">
               <span>Selected wind slot</span>
