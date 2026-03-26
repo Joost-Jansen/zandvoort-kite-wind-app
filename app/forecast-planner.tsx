@@ -77,9 +77,10 @@ function getHeatStrengthClass(windKnots: number) {
 function getWindOverlayStyle(windKnots: number, directionDegrees: number) {
   const normalizedStrength = Math.min(Math.max((windKnots - 8) / 20, 0.2), 1);
   const flowDuration = Math.max(2.4, 5.8 - normalizedStrength * 2.2);
-  const tintOpacity = 0.18 + normalizedStrength * 0.2;
-  const streakOpacity = 0.14 + normalizedStrength * 0.18;
-  const heatOpacity = 0.2 + normalizedStrength * 0.22;
+  const tintOpacity = 0.32 + normalizedStrength * 0.34;
+  const streakOpacity = 0.28 + normalizedStrength * 0.34;
+  const heatOpacity = 0.32 + normalizedStrength * 0.3;
+  const arrowOpacity = 0.38 + normalizedStrength * 0.48;
 
   const overlayStyle: CSSProperties & Record<string, string> = {
     "--wind-angle": `${directionDegrees}deg`,
@@ -88,6 +89,7 @@ function getWindOverlayStyle(windKnots: number, directionDegrees: number) {
     "--tint-opacity": `${tintOpacity}`,
     "--streak-opacity": `${streakOpacity}`,
     "--heat-opacity": `${heatOpacity}`,
+    "--arrow-opacity": `${arrowOpacity}`,
   };
 
   return overlayStyle;
@@ -120,8 +122,8 @@ export function ForecastPlanner({ forecast, location, locations, spotRankings }:
   const favorableWeekends = favorableDays.filter((day) => day.weekend).length;
   const bestWeekendDay = favorableDays.find((day) => day.weekend);
   const topPlaces = spotRankings.slice(0, 5);
-  const heatPatches = Array.from({ length: 9 }, (_, index) => index + 1);
-  const flowLines = Array.from({ length: 18 }, (_, index) => index + 1);
+  const heatPatches = Array.from({ length: 12 }, (_, index) => index + 1);
+  const flowLines = Array.from({ length: 28 }, (_, index) => index + 1);
   const heatScale = [35, 27, 19, 11];
 
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
@@ -134,6 +136,10 @@ export function ForecastPlanner({ forecast, location, locations, spotRankings }:
 
   const selectedHour =
     selectedDay.daylightHours.find((hour) => hour.time === selectedHourTime) ?? selectedDay.daylightHours[0];
+  const activeFlowLineCount =
+    selectedHour.windKnots >= 24 ? 28 : selectedHour.windKnots >= 19 ? 20 : selectedHour.windKnots >= 15 ? 14 : 8;
+  const activeHeatPatchCount =
+    selectedHour.windKnots >= 24 ? 12 : selectedHour.windKnots >= 19 ? 9 : selectedHour.windKnots >= 15 ? 7 : 4;
 
   return (
     <main className="page-shell">
@@ -221,12 +227,20 @@ export function ForecastPlanner({ forecast, location, locations, spotRankings }:
               <div className="wind-overlay-tint" />
               <div className="wind-heat-layer">
                 {heatPatches.map((patch) => (
-                  <span className={`wind-heat-patch patch-${patch}`} key={`patch-${patch}`} />
+                  <span
+                    className={`wind-heat-patch patch-${patch} ${patch <= activeHeatPatchCount ? "is-active" : "is-muted"}`}
+                    key={`patch-${patch}`}
+                  />
                 ))}
               </div>
               <div className="wind-flow-layer">
                 {flowLines.map((line) => (
-                  <span className={`wind-flow-line line-${line}`} key={`line-${line}`} />
+                  <span
+                    className={`wind-flow-line line-${line} ${line <= activeFlowLineCount ? "is-active" : "is-muted"}`}
+                    key={`line-${line}`}
+                  >
+                    <span className="wind-flow-arrow">➜</span>
+                  </span>
                 ))}
               </div>
               <div className="wind-overlay-scale" aria-hidden="true">

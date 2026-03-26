@@ -17,11 +17,13 @@
 
 html {
   min-height: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: hidden;
   color: var(--deep-water);
   font-family: var(--font-body), sans-serif;
   background:
@@ -315,199 +317,171 @@ a {
 
 .wind-overlay-vector {
   position: absolute;
-  .wind-overlay-tint {
+  inset: 0;
   pointer-events: none;
-    inset: 0;
-    background:
-      linear-gradient(180deg, rgba(68, 132, 181, calc(var(--tint-opacity) * 0.9)), rgba(26, 74, 116, calc(var(--tint-opacity) * 1.2))),
-      radial-gradient(circle at 20% 34%, rgba(138, 215, 255, calc(var(--tint-opacity) * 0.85)), transparent 36%),
-      radial-gradient(circle at 64% 66%, rgba(169, 234, 133, calc(var(--tint-opacity) * 0.8)), transparent 28%),
-      radial-gradient(circle at 56% 40%, rgba(255, 223, 127, calc(var(--tint-opacity) * 0.75)), transparent 24%);
-    mix-blend-mode: multiply;
-  }
-
-  .wind-heat-layer {
-    position: absolute;
-    inset: 0;
-  }
-
-  .wind-heat-patch {
-    position: absolute;
-    border-radius: 999px;
-    filter: blur(26px);
-    opacity: var(--heat-opacity);
-    background: radial-gradient(circle, rgba(255, 228, 120, 0.95), rgba(137, 226, 118, 0.75), rgba(60, 157, 199, 0.2) 72%, transparent 100%);
-    animation: heatPulseField 6.4s ease-in-out infinite;
-  }
-
-  .wind-heat-patch.patch-1 {
-    left: -6%;
-    top: 8%;
-    width: 34%;
-    height: 30%;
-  }
-
-  .wind-heat-patch.patch-2 {
-    left: 14%;
-    top: 16%;
-    width: 28%;
-    height: 24%;
-    animation-delay: 0.8s;
-  }
-
-  .wind-heat-patch.patch-3 {
-    right: 18%;
-    top: 12%;
-    width: 24%;
-    height: 22%;
-    animation-delay: 1.5s;
-  }
-
-  .wind-heat-patch.patch-4 {
-    left: 36%;
-    top: 34%;
-    width: 30%;
-    height: 24%;
-    animation-delay: 1.1s;
-  }
-
-  .wind-heat-patch.patch-5 {
-    left: 56%;
-    top: 44%;
-    width: 26%;
-    height: 22%;
-    animation-delay: 2.4s;
-  }
-
-  .wind-heat-patch.patch-6 {
-    left: 6%;
-    bottom: 10%;
-    width: 34%;
-    height: 28%;
-    animation-delay: 1.8s;
-  }
-
-  .wind-heat-patch.patch-7 {
-    left: 42%;
-    bottom: 8%;
-    width: 30%;
-    height: 24%;
-    animation-delay: 0.5s;
-  }
-
-  .wind-heat-patch.patch-8 {
-    right: -6%;
-    top: 24%;
-    width: 30%;
-    height: 34%;
-    animation-delay: 2.9s;
-  }
-
-  .wind-heat-patch.patch-9 {
-    right: 4%;
-    bottom: 6%;
-    width: 26%;
-    height: 24%;
-    animation-delay: 1.9s;
-  }
-
-  .wind-flow-layer {
-    position: absolute;
-    inset: -12%;
-    transform: rotate(var(--wind-angle));
-    transform-origin: center;
-  }
-
-  .wind-flow-line {
-    position: absolute;
-    display: block;
-    width: 20%;
-    height: 2px;
-    border-radius: 999px;
-    opacity: var(--streak-opacity);
-    background: linear-gradient(90deg, transparent 0%, rgba(255, 250, 219, 0.88) 38%, rgba(214, 240, 255, 0.8) 58%, transparent 100%);
-    box-shadow: 0 0 10px rgba(214, 240, 255, 0.16);
-    animation: flowDrift var(--flow-duration) linear infinite;
-  }
-
-  .wind-flow-line::after {
-    content: "";
-    position: absolute;
-    right: 10%;
-    top: 50%;
-    width: 34px;
-    height: 1px;
-    transform: translateY(-50%);
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 248, 205, 0.95));
-  }
-
-  .wind-flow-line.line-1 { left: -4%; top: 10%; animation-delay: -0.8s; }
-  .wind-flow-line.line-2 { left: 14%; top: 8%; width: 18%; animation-delay: -2.1s; }
-  .wind-flow-line.line-3 { left: 34%; top: 14%; width: 24%; animation-delay: -1.6s; }
-  .wind-flow-line.line-4 { left: 58%; top: 12%; width: 16%; animation-delay: -3.4s; }
-  .wind-flow-line.line-5 { left: 76%; top: 18%; width: 20%; animation-delay: -1.9s; }
-  .wind-flow-line.line-6 { left: -6%; top: 28%; width: 26%; animation-delay: -4.2s; }
-  .wind-flow-line.line-7 { left: 18%; top: 30%; width: 18%; animation-delay: -2.8s; }
-  .wind-flow-line.line-8 { left: 40%; top: 32%; width: 22%; animation-delay: -0.4s; }
-  .wind-flow-line.line-9 { left: 66%; top: 34%; width: 18%; animation-delay: -3.1s; }
-  .wind-flow-line.line-10 { left: 82%; top: 38%; width: 14%; animation-delay: -1.2s; }
-  .wind-flow-line.line-11 { left: -2%; top: 52%; width: 22%; animation-delay: -2.5s; }
-  .wind-flow-line.line-12 { left: 18%; top: 54%; width: 16%; animation-delay: -4.6s; }
-  .wind-flow-line.line-13 { left: 38%; top: 58%; width: 22%; animation-delay: -0.9s; }
-  .wind-flow-line.line-14 { left: 62%; top: 56%; width: 18%; animation-delay: -3.8s; }
-  .wind-flow-line.line-15 { left: 78%; top: 62%; width: 20%; animation-delay: -1.5s; }
-  .wind-flow-line.line-16 { left: 8%; top: 74%; width: 24%; animation-delay: -2.9s; }
-  .wind-flow-line.line-17 { left: 40%; top: 80%; width: 18%; animation-delay: -4.9s; }
-  .wind-flow-line.line-18 { left: 70%; top: 78%; width: 24%; animation-delay: -0.7s; }
-
-  .wind-overlay-scale {
-    position: absolute;
-    left: 0.85rem;
-    top: 0.85rem;
-    display: grid;
-    gap: 0.28rem;
-    padding: 0.5rem 0.55rem;
-    border-radius: 14px;
-    background: rgba(12, 27, 58, 0.62);
-    color: white;
-    backdrop-filter: blur(8px);
-  }
-
-  .scale-unit {
-    font-size: 0.62rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.72);
-  }
-
-  .scale-row {
-    display: grid;
-    grid-template-columns: 12px auto;
-    gap: 0.35rem;
-    align-items: center;
-  }
-
-  .scale-row strong {
-    font-size: 0.72rem;
-    font-weight: 700;
-  }
-
-  .scale-swatch {
-    display: block;
-    width: 12px;
-    height: 12px;
-    border-radius: 4px;
-  }
-
-  .scale-swatch.scale-35 { background: #f1cf63; }
-  .scale-swatch.scale-27 { background: #91d76b; }
-  .scale-swatch.scale-19 { background: #58b7d5; }
-  .scale-swatch.scale-11 { background: #386ea8; }
 }
 
-.wind-wave-row .wind-wave-segment:nth-child(4) {
-  transform: translateX(6%);
+.wind-overlay-tint {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(74, 144, 226, calc(var(--tint-opacity) * 0.95)), rgba(18, 72, 126, calc(var(--tint-opacity) * 1.1))),
+    radial-gradient(circle at 18% 26%, rgba(116, 212, 255, calc(var(--tint-opacity) * 0.95)), transparent 34%),
+    radial-gradient(circle at 62% 62%, rgba(142, 232, 109, calc(var(--tint-opacity) * 0.92)), transparent 28%),
+    radial-gradient(circle at 54% 40%, rgba(255, 222, 104, calc(var(--tint-opacity) * 0.92)), transparent 24%);
+  mix-blend-mode: multiply;
 }
+
+.wind-heat-layer {
+  position: absolute;
+  inset: 0;
+}
+
+.wind-heat-patch {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(24px);
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255, 226, 97, 0.96), rgba(143, 234, 113, 0.82), rgba(74, 181, 235, 0.42) 72%, transparent 100%);
+  transition: opacity 220ms ease;
+  animation: heatPulseField 6s ease-in-out infinite;
+}
+
+.wind-heat-patch.is-active {
+  opacity: var(--heat-opacity);
+}
+
+.wind-heat-patch.is-muted {
+  opacity: calc(var(--heat-opacity) * 0.18);
+}
+
+.wind-heat-patch.patch-1 { left: -6%; top: 4%; width: 30%; height: 26%; }
+.wind-heat-patch.patch-2 { left: 10%; top: 14%; width: 26%; height: 22%; animation-delay: 0.6s; }
+.wind-heat-patch.patch-3 { left: 34%; top: 10%; width: 28%; height: 22%; animation-delay: 1.2s; }
+.wind-heat-patch.patch-4 { right: 10%; top: 10%; width: 24%; height: 20%; animation-delay: 2s; }
+.wind-heat-patch.patch-5 { left: 6%; top: 36%; width: 30%; height: 24%; animation-delay: 1.1s; }
+.wind-heat-patch.patch-6 { left: 32%; top: 34%; width: 26%; height: 22%; animation-delay: 1.8s; }
+.wind-heat-patch.patch-7 { right: 2%; top: 34%; width: 28%; height: 24%; animation-delay: 2.4s; }
+.wind-heat-patch.patch-8 { left: -4%; bottom: 8%; width: 30%; height: 24%; animation-delay: 1.4s; }
+.wind-heat-patch.patch-9 { left: 20%; bottom: 6%; width: 28%; height: 22%; animation-delay: 2.7s; }
+.wind-heat-patch.patch-10 { left: 46%; bottom: 8%; width: 24%; height: 20%; animation-delay: 0.9s; }
+.wind-heat-patch.patch-11 { right: 12%; bottom: 10%; width: 22%; height: 20%; animation-delay: 3.1s; }
+.wind-heat-patch.patch-12 { right: -6%; bottom: 4%; width: 26%; height: 24%; animation-delay: 1.7s; }
+
+.wind-flow-layer {
+  position: absolute;
+  inset: -12%;
+  transform: rotate(var(--wind-angle));
+  transform-origin: center;
+}
+
+.wind-flow-line {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 20%;
+  height: 3px;
+  border-radius: 999px;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(178, 235, 255, 0.3) 18%, rgba(236, 255, 168, 0.84) 44%, rgba(255, 244, 182, 0.96) 66%, transparent 100%);
+  box-shadow: 0 0 14px rgba(255, 238, 163, 0.26);
+  transition: opacity 220ms ease;
+  animation: flowDrift var(--flow-duration) linear infinite;
+}
+
+.wind-flow-line.is-active {
+  opacity: var(--streak-opacity);
+}
+
+.wind-flow-line.is-muted {
+  opacity: calc(var(--streak-opacity) * 0.12);
+}
+
+.wind-flow-arrow {
+  position: absolute;
+  right: 8%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.95rem;
+  line-height: 1;
+  color: rgba(255, 247, 189, var(--arrow-opacity));
+  text-shadow: 0 0 10px rgba(255, 241, 168, 0.4);
+  animation: arrowDrift var(--flow-duration) linear infinite;
+}
+
+.wind-flow-line.line-1 { left: -6%; top: 8%; width: 22%; animation-delay: -0.8s; }
+.wind-flow-line.line-2 { left: 8%; top: 6%; width: 18%; animation-delay: -2.1s; }
+.wind-flow-line.line-3 { left: 24%; top: 10%; width: 20%; animation-delay: -1.1s; }
+.wind-flow-line.line-4 { left: 42%; top: 8%; width: 24%; animation-delay: -3.6s; }
+.wind-flow-line.line-5 { left: 62%; top: 10%; width: 18%; animation-delay: -1.8s; }
+.wind-flow-line.line-6 { left: 80%; top: 14%; width: 16%; animation-delay: -2.9s; }
+.wind-flow-line.line-7 { left: -4%; top: 22%; width: 24%; animation-delay: -4.2s; }
+.wind-flow-line.line-8 { left: 16%; top: 24%; width: 18%; animation-delay: -0.4s; }
+.wind-flow-line.line-9 { left: 34%; top: 26%; width: 22%; animation-delay: -2.4s; }
+.wind-flow-line.line-10 { left: 56%; top: 24%; width: 18%; animation-delay: -1.2s; }
+.wind-flow-line.line-11 { left: 74%; top: 28%; width: 20%; animation-delay: -3.4s; }
+.wind-flow-line.line-12 { left: -2%; top: 38%; width: 20%; animation-delay: -2s; }
+.wind-flow-line.line-13 { left: 18%; top: 40%; width: 22%; animation-delay: -4.5s; }
+.wind-flow-line.line-14 { left: 40%; top: 42%; width: 18%; animation-delay: -0.6s; }
+.wind-flow-line.line-15 { left: 60%; top: 40%; width: 20%; animation-delay: -3s; }
+.wind-flow-line.line-16 { left: 78%; top: 44%; width: 16%; animation-delay: -1.5s; }
+.wind-flow-line.line-17 { left: -6%; top: 56%; width: 24%; animation-delay: -2.6s; }
+.wind-flow-line.line-18 { left: 12%; top: 58%; width: 18%; animation-delay: -4.9s; }
+.wind-flow-line.line-19 { left: 30%; top: 60%; width: 24%; animation-delay: -0.9s; }
+.wind-flow-line.line-20 { left: 54%; top: 58%; width: 20%; animation-delay: -3.8s; }
+.wind-flow-line.line-21 { left: 74%; top: 62%; width: 18%; animation-delay: -1.4s; }
+.wind-flow-line.line-22 { left: 4%; top: 72%; width: 24%; animation-delay: -2.8s; }
+.wind-flow-line.line-23 { left: 24%; top: 74%; width: 18%; animation-delay: -4.1s; }
+.wind-flow-line.line-24 { left: 44%; top: 76%; width: 22%; animation-delay: -1s; }
+.wind-flow-line.line-25 { left: 66%; top: 74%; width: 20%; animation-delay: -3.2s; }
+.wind-flow-line.line-26 { left: -2%; top: 86%; width: 20%; animation-delay: -2.3s; }
+.wind-flow-line.line-27 { left: 28%; top: 88%; width: 22%; animation-delay: -4.4s; }
+.wind-flow-line.line-28 { left: 60%; top: 86%; width: 24%; animation-delay: -1.7s; }
+
+.wind-overlay-scale {
+  position: absolute;
+  left: 0.85rem;
+  top: 0.85rem;
+  display: grid;
+  gap: 0.28rem;
+  padding: 0.5rem 0.55rem;
+  border-radius: 14px;
+  background: rgba(12, 27, 58, 0.62);
+  color: white;
+  backdrop-filter: blur(8px);
+}
+
+.scale-unit {
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.scale-row {
+  display: grid;
+  grid-template-columns: 12px auto;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.scale-row strong {
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.scale-swatch {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+}
+
+.scale-swatch.scale-35 { background: #ffe36a; }
+.scale-swatch.scale-27 { background: #91e25f; }
+.scale-swatch.scale-19 { background: #56c0ee; }
+.scale-swatch.scale-11 { background: #315ca1; }
 
 .wind-overlay-arrow {
   display: inline-flex;
@@ -1061,11 +1035,22 @@ a {
 
 @keyframes flowDrift {
   from {
-    transform: translateX(-5%);
+    transform: translateX(-8%);
   }
 
   to {
-    transform: translateX(18%);
+    transform: translateX(24%);
+  }
+}
+
+@keyframes arrowDrift {
+  0%,
+  100% {
+    transform: translateY(-50%) scale(0.92);
+  }
+
+  50% {
+    transform: translateY(-50%) scale(1.08);
   }
 }
 
@@ -1094,11 +1079,11 @@ a {
 @keyframes windArrowPulse {
   0%,
   100% {
-    transform: translateY(-50%) scale(0.96);
+    transform: scale(0.96);
   }
 
   50% {
-    transform: translateY(-50%) scale(1.06);
+    transform: scale(1.06);
   }
 }
 
@@ -1197,6 +1182,7 @@ a {
   .page-shell {
     width: min(100% - 1rem, 1180px);
     padding-top: 1rem;
+    padding-bottom: 2rem;
   }
 
   .hero-panel,
@@ -1221,9 +1207,28 @@ a {
 
   .hero-copy h1 {
     font-size: clamp(2.8rem, 13vw, 4.3rem);
+    max-width: 7ch;
+    line-height: 0.9;
+  }
+
+  .eyebrow {
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+  }
+
+  .hero-text {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .location-switcher {
+    margin-inline: -0.1rem;
+    padding-inline: 0.1rem;
+    scroll-snap-type: x proximity;
   }
 
   .location-chip {
+    scroll-snap-align: start;
     min-width: 116px;
     padding: 0.72rem 0.8rem;
   }
@@ -1233,6 +1238,21 @@ a {
   .spot-ranking-item,
   .ranked-session {
     padding: 0.8rem;
+  }
+
+  .hero-stats {
+    gap: 0.7rem;
+  }
+
+  .hero-stats div {
+    padding: 0.8rem;
+  }
+
+  .primary-button,
+  .secondary-button,
+  .ghost-button {
+    min-height: 48px;
+    padding-inline: 0.9rem;
   }
 
   .forecast-card {
@@ -1328,6 +1348,14 @@ a {
     padding: 0.62rem 0.7rem;
   }
 
+  .spot-ranking-copy p,
+  .rank-copy p,
+  .microcopy,
+  .section-note {
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
   .spot-ranking-item {
     grid-template-columns: 42px minmax(0, 1fr);
     gap: 0.7rem;
@@ -1349,6 +1377,20 @@ a {
 
   .hero-copy h1 {
     font-size: clamp(2.3rem, 12vw, 3.2rem);
+    max-width: 6ch;
+  }
+
+  .hero-panel,
+  .hero-actions,
+  .planning-card,
+  .insight-card,
+  .methodology-panel {
+    padding: 0.9rem;
+  }
+
+  .location-chip {
+    min-width: 104px;
+    padding: 0.68rem 0.72rem;
   }
 
   .map-frame {
@@ -1385,6 +1427,12 @@ a {
 
   .hour-chip {
     min-width: 76px;
+  }
+
+  .primary-button,
+  .secondary-button,
+  .ghost-button {
+    font-size: 0.95rem;
   }
 
   .forecast-card {
