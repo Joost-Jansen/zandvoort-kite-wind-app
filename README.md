@@ -5,7 +5,7 @@ This app was basically vibe-coded at irresponsible speed for a non-technical roo
 "Can I go kiting, or am I just dressing up to stand sadly on a beach?"
 
 Live version:
-https://zandvoort-kite-wind-app.vercel.app/
+https://kite-wind-app.vercel.app/
 
 ## What it does
 
