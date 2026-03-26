@@ -211,6 +211,10 @@ a {
   margin-top: 1.6rem;
 }
 
+.planning-grid-ranked {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .planning-card {
   padding: 1.25rem;
   border: 1px solid rgba(255, 255, 255, 0.45);
@@ -332,6 +336,22 @@ a {
   min-width: max-content;
 }
 
+.timeline-slot {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.month-marker {
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(18, 52, 59, 0.08);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
 .forecast-card {
   position: relative;
   overflow: hidden;
@@ -358,6 +378,11 @@ a {
   border-color: rgba(55, 138, 92, 0.18);
 }
 
+.forecast-card.is-today {
+  border-color: rgba(255, 148, 102, 0.34);
+  box-shadow: 0 20px 60px rgba(255, 148, 102, 0.18);
+}
+
 .card-header {
   display: flex;
   align-items: flex-start;
@@ -366,6 +391,10 @@ a {
 }
 
 .card-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
   margin-top: 1rem;
 }
 
@@ -428,6 +457,28 @@ a {
   background: rgba(255, 148, 102, 0.28);
 }
 
+.direction-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.32rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(18, 52, 59, 0.07);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.direction-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  transform-origin: center;
+}
+
 .wind-figure {
   margin: 1.4rem 0 1rem;
   font-family: var(--font-heading), serif;
@@ -461,6 +512,48 @@ a {
   line-height: 1.6;
 }
 
+.hourly-breakdown {
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(18, 52, 59, 0.08);
+}
+
+.hourly-breakdown summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  list-style: none;
+}
+
+.hourly-breakdown summary::-webkit-details-marker {
+  display: none;
+}
+
+.hourly-list {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.hour-row {
+  display: grid;
+  grid-template-columns: 56px repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.55rem 0.65rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.46);
+  font-size: 0.78rem;
+}
+
+.hour-time {
+  font-weight: 700;
+}
+
+.hour-metric {
+  color: rgba(18, 52, 59, 0.82);
+}
+
 .methodology-panel {
   display: grid;
   gap: 1.2rem;
@@ -483,6 +576,50 @@ a {
 .method-grid h3 {
   margin: 0;
   font-size: 1rem;
+}
+
+.ranked-session-list {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.ranked-session {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.46);
+}
+
+.rank-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(255, 148, 102, 0.18), rgba(255, 194, 111, 0.34));
+  font-family: var(--font-heading), serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.rank-copy {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.rank-copy strong,
+.rank-copy p {
+  margin: 0;
+}
+
+.rank-copy p {
+  color: rgba(18, 52, 59, 0.72);
+  line-height: 1.5;
 }
 
 @media (max-width: 860px) {
@@ -508,6 +645,10 @@ a {
   }
 
   .planning-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .planning-grid-ranked {
     grid-template-columns: 1fr;
   }
 }
@@ -537,6 +678,17 @@ a {
 
   .forecast-card {
     flex-basis: 220px;
+  }
+
+  .card-status-row,
+  .hour-row,
+  .ranked-session {
+    grid-template-columns: 1fr;
+  }
+
+  .card-status-row {
+    display: grid;
+    justify-content: start;
   }
 
   .card-meta {

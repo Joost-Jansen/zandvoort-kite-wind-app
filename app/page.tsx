@@ -9,6 +9,10 @@ function formatWind(value: number) {
   return `${value.toFixed(1)} kn`;
 }
 
+function getDirectionArrowStyle(degrees: number) {
+  return { transform: `rotate(${degrees}deg)` };
+}
+
 function getDayStatus(day: ForecastDay) {
   if (day.averageWindKnots > 35) {
     return "Caution";
@@ -44,6 +48,9 @@ function getDayTone(day: ForecastDay) {
 export default async function HomePage() {
   const forecast = await getZandvoortForecast();
   const favorableDays = forecast.filter((day) => day.advice.favorable);
+  const rankedDays = [...forecast]
+    .sort((left, right) => right.averageWindKnots - left.averageWindKnots)
+    .slice(0, 3);
   const bestDay = forecast.reduce((best, day) =>
     day.averageWindKnots > best.averageWindKnots ? day : best,
   );
@@ -196,6 +203,46 @@ export default async function HomePage() {
         </article>
       </section>
 
+      <section className="planning-grid planning-grid-ranked" aria-label="top sessions">
+        <article className="planning-card">
+          <p className="section-eyebrow">Top sessions</p>
+          <h2>Best 3 forecast windows right now.</h2>
+          <div className="ranked-session-list">
+            {rankedDays.map((day, index) => (
+              <div className="ranked-session" key={day.date}>
+                <div className="rank-index">0{index + 1}</div>
+                <div className="rank-copy">
+                  <strong>
+                    {day.label} • {formatWind(day.averageWindKnots)}
+                  </strong>
+                  <p>
+                    {day.advice.label} • Gusts {formatWind(day.averageGustKnots)} • {day.directionLabel}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </article>
+        <article className="planning-card">
+          <p className="section-eyebrow">Timeline tips</p>
+          <h2>How to scan the forecast fast.</h2>
+          <div className="mini-stat-list">
+            <div>
+              <span>Today marker</span>
+              <strong>The first card is highlighted so users know where the live forecast starts.</strong>
+            </div>
+            <div>
+              <span>Month transitions</span>
+              <strong>Month dividers appear automatically when the timeline crosses into a new month.</strong>
+            </div>
+            <div>
+              <span>Drill-down</span>
+              <strong>Each card now opens a daytime hourly breakdown for better session timing.</strong>
+            </div>
+          </div>
+        </article>
+      </section>
+
       <section className="forecast-section" aria-label="14 day kite forecast">
         <div className="section-header">
           <div>
@@ -210,57 +257,78 @@ export default async function HomePage() {
 
         <div className="forecast-scroller">
           <div className="forecast-track">
-            {forecast.map((day) => {
+            {forecast.map((day, index) => {
               const weekendHighlight = day.weekend && day.averageWindKnots >= 15;
+              const showMonthMarker = index === 0 || day.monthLabel !== forecast[index - 1].monthLabel;
 
               return (
-                <article
-                  className={`forecast-card ${weekendHighlight ? "is-favorable-weekend" : ""}`}
-                  key={day.date}
-                >
-                  <div className="card-header">
-                    <div>
-                      <p className="day-label">{day.label}</p>
-                      <p className="date-stamp">{day.shortLabel}</p>
+                <div className="timeline-slot" key={day.date}>
+                  {showMonthMarker ? <div className="month-marker">{day.monthLabel}</div> : null}
+                  <article
+                    className={`forecast-card ${weekendHighlight ? "is-favorable-weekend" : ""} ${index === 0 ? "is-today" : ""}`}
+                  >
+                    <div className="card-header">
+                      <div>
+                        <p className="day-label">{day.label}</p>
+                        <p className="date-stamp">{day.shortLabel}</p>
+                      </div>
+                      <span className={`badge ${day.weekend ? "is-weekend" : ""}`}>
+                        {index === 0 ? "Today" : day.weekend ? "Weekend" : "Weekday"}
+                      </span>
                     </div>
-                    <span className={`badge ${day.weekend ? "is-weekend" : ""}`}>
-                      {day.weekend ? "Weekend" : "Weekday"}
-                    </span>
-                  </div>
 
-                  <div className="card-status-row">
-                    <span className={`signal-pill ${getDayTone(day)}`}>{getDayStatus(day)}</span>
-                  </div>
+                    <div className="card-status-row">
+                      <span className={`signal-pill ${getDayTone(day)}`}>{getDayStatus(day)}</span>
+                      <div className="direction-chip">
+                        <span className="direction-arrow" style={getDirectionArrowStyle(day.averageDirectionDegrees)}>
+                          ↑
+                        </span>
+                        <span>
+                          {day.directionLabel} • {day.averageDirectionDegrees}°
+                        </span>
+                      </div>
+                    </div>
 
-                  <div className="wind-figure">{formatWind(day.averageWindKnots)}</div>
+                    <div className="wind-figure">{formatWind(day.averageWindKnots)}</div>
 
-                  <dl className="card-meta">
-                    <div>
-                      <dt>Average daytime wind</dt>
-                      <dd>{formatWind(day.averageWindKnots)}</dd>
-                    </div>
-                    <div>
-                      <dt>Average gusts</dt>
-                      <dd>{formatWind(day.averageGustKnots)}</dd>
-                    </div>
-                    <div>
-                      <dt>Prevailing direction</dt>
-                      <dd>
-                        {day.directionLabel} • {day.averageDirectionDegrees}°
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Kite advice</dt>
-                      <dd>{day.advice.label}</dd>
-                    </div>
-                    <div>
-                      <dt>Planning confidence</dt>
-                      <dd>{day.confidenceLabel}</dd>
-                    </div>
-                  </dl>
+                    <dl className="card-meta">
+                      <div>
+                        <dt>Average daytime wind</dt>
+                        <dd>{formatWind(day.averageWindKnots)}</dd>
+                      </div>
+                      <div>
+                        <dt>Average gusts</dt>
+                        <dd>{formatWind(day.averageGustKnots)}</dd>
+                      </div>
+                      <div>
+                        <dt>Kite advice</dt>
+                        <dd>{day.advice.label}</dd>
+                      </div>
+                      <div>
+                        <dt>Planning confidence</dt>
+                        <dd>{day.confidenceLabel}</dd>
+                      </div>
+                    </dl>
 
-                  <p className="advice-detail">{day.advice.detail}</p>
-                </article>
+                    <p className="advice-detail">{day.advice.detail}</p>
+
+                    <details className="hourly-breakdown">
+                      <summary>View daytime hourly breakdown</summary>
+                      <div className="hourly-list">
+                        {day.daylightHours.map((hour) => (
+                          <div className="hour-row" key={`${day.date}-${hour.time}`}>
+                            <span className="hour-time">{hour.time}</span>
+                            <span className="hour-metric">{formatWind(hour.windKnots)}</span>
+                            <span className="hour-metric">G {formatWind(hour.gustKnots)}</span>
+                            <span className="hour-metric">
+                              {hour.directionLabel} {hour.directionDegrees}°
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  </article>
+                </div>
               );
             })}
           </div>

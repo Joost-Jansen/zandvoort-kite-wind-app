@@ -10,12 +10,20 @@ export type ForecastDay = {
   date: string;
   label: string;
   shortLabel: string;
+  monthLabel: string;
   weekend: boolean;
   averageWindKnots: number;
   averageGustKnots: number;
   averageDirectionDegrees: number;
   directionLabel: string;
   confidenceLabel: string;
+  daylightHours: Array<{
+    time: string;
+    windKnots: number;
+    gustKnots: number;
+    directionDegrees: number;
+    directionLabel: string;
+  }>;
   advice: KiteAdvice;
 };
 
@@ -35,6 +43,12 @@ const formatter = new Intl.DateTimeFormat("en-GB", {
   timeZone: "Europe/Amsterdam",
 });
 
+const monthFormatter = new Intl.DateTimeFormat("en-GB", {
+  month: "long",
+  year: "numeric",
+  timeZone: "Europe/Amsterdam",
+});
+
 function roundToSingleDecimal(value: number) {
   return Math.round(value * 10) / 10;
 }
@@ -51,6 +65,10 @@ function isWeekend(date: string) {
 
 function formatDate(date: string) {
   return formatter.format(new Date(`${date}T12:00:00+01:00`));
+}
+
+function formatMonth(date: string) {
+  return monthFormatter.format(new Date(`${date}T12:00:00+01:00`));
 }
 
 function degreesToCompass(degrees: number) {
@@ -130,7 +148,20 @@ export function mapForecast(response: OpenMeteoResponse): ForecastDay[] {
     throw new Error("Open-Meteo response is missing hourly wind data.");
   }
 
-  const buckets = new Map<string, { speeds: number[]; gusts: number[]; directions: number[] }>();
+  const buckets = new Map<
+    string,
+    {
+      speeds: number[];
+      gusts: number[];
+      directions: number[];
+      daylightHours: Array<{
+        time: string;
+        windKnots: number;
+        gustKnots: number;
+        directionDegrees: number;
+      }>;
+    }
+  >();
 
   times.forEach((time, index) => {
     const [date, hourPart] = time.split("T");
@@ -140,10 +171,16 @@ export function mapForecast(response: OpenMeteoResponse): ForecastDay[] {
       return;
     }
 
-    const current = buckets.get(date) ?? { speeds: [], gusts: [], directions: [] };
+    const current = buckets.get(date) ?? { speeds: [], gusts: [], directions: [], daylightHours: [] };
     current.speeds.push(speeds[index]);
     current.gusts.push(gusts[index]);
     current.directions.push(directions[index]);
+    current.daylightHours.push({
+      time: `${hourPart.slice(0, 5)}`,
+      windKnots: roundToSingleDecimal(speeds[index]),
+      gustKnots: roundToSingleDecimal(gusts[index]),
+      directionDegrees: roundToWholeNumber(directions[index]),
+    });
     buckets.set(date, current);
   });
 
@@ -164,12 +201,17 @@ export function mapForecast(response: OpenMeteoResponse): ForecastDay[] {
       date,
       label: formatDate(date),
       shortLabel: date,
+      monthLabel: formatMonth(date),
       weekend,
       averageWindKnots,
       averageGustKnots,
       averageDirectionDegrees,
       directionLabel: degreesToCompass(averageDirectionDegrees),
       confidenceLabel: getConfidenceLabel(dayIndex),
+      daylightHours: values.daylightHours.map((hour) => ({
+        ...hour,
+        directionLabel: degreesToCompass(hour.directionDegrees),
+      })),
       advice,
     };
   });
