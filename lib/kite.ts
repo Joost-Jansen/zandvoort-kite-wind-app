@@ -12,6 +12,10 @@ export type ForecastDay = {
   shortLabel: string;
   weekend: boolean;
   averageWindKnots: number;
+  averageGustKnots: number;
+  averageDirectionDegrees: number;
+  directionLabel: string;
+  confidenceLabel: string;
   advice: KiteAdvice;
 };
 
@@ -19,6 +23,8 @@ type OpenMeteoResponse = {
   hourly?: {
     time?: string[];
     wind_speed_10m?: number[];
+    wind_gusts_10m?: number[];
+    wind_direction_10m?: number[];
   };
 };
 
@@ -33,6 +39,10 @@ function roundToSingleDecimal(value: number) {
   return Math.round(value * 10) / 10;
 }
 
+function roundToWholeNumber(value: number) {
+  return Math.round(value);
+}
+
 function isWeekend(date: string) {
   const [year, month, day] = date.split("-").map(Number);
   const weekday = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
@@ -41,6 +51,25 @@ function isWeekend(date: string) {
 
 function formatDate(date: string) {
   return formatter.format(new Date(`${date}T12:00:00+01:00`));
+}
+
+function degreesToCompass(degrees: number) {
+  const sectors = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+  const normalizedDegrees = ((degrees % 360) + 360) % 360;
+  const index = Math.round(normalizedDegrees / 45) % sectors.length;
+  return sectors[index];
+}
+
+function getConfidenceLabel(dayIndex: number) {
+  if (dayIndex <= 2) {
+    return "High confidence";
+  }
+
+  if (dayIndex <= 6) {
+    return "Medium confidence";
+  }
+
+  return "Long-range signal";
 }
 
 export function getKiteAdvice(averageWindKnots: number): KiteAdvice {
@@ -86,12 +115,22 @@ export function getKiteAdvice(averageWindKnots: number): KiteAdvice {
 export function mapForecast(response: OpenMeteoResponse): ForecastDay[] {
   const times = response.hourly?.time;
   const speeds = response.hourly?.wind_speed_10m;
+  const gusts = response.hourly?.wind_gusts_10m;
+  const directions = response.hourly?.wind_direction_10m;
 
-  if (!times || !speeds || times.length !== speeds.length) {
+  if (
+    !times ||
+    !speeds ||
+    !gusts ||
+    !directions ||
+    times.length !== speeds.length ||
+    times.length !== gusts.length ||
+    times.length !== directions.length
+  ) {
     throw new Error("Open-Meteo response is missing hourly wind data.");
   }
 
-  const buckets = new Map<string, number[]>();
+  const buckets = new Map<string, { speeds: number[]; gusts: number[]; directions: number[] }>();
 
   times.forEach((time, index) => {
     const [date, hourPart] = time.split("T");
@@ -101,15 +140,22 @@ export function mapForecast(response: OpenMeteoResponse): ForecastDay[] {
       return;
     }
 
-    const speed = speeds[index];
-    const current = buckets.get(date) ?? [];
-    current.push(speed);
+    const current = buckets.get(date) ?? { speeds: [], gusts: [], directions: [] };
+    current.speeds.push(speeds[index]);
+    current.gusts.push(gusts[index]);
+    current.directions.push(directions[index]);
     buckets.set(date, current);
   });
 
-  return [...buckets.entries()].map(([date, values]) => {
+  return [...buckets.entries()].map(([date, values], dayIndex) => {
     const averageWindKnots = roundToSingleDecimal(
-      values.reduce((sum, value) => sum + value, 0) / values.length,
+      values.speeds.reduce((sum, value) => sum + value, 0) / values.speeds.length,
+    );
+    const averageGustKnots = roundToSingleDecimal(
+      values.gusts.reduce((sum, value) => sum + value, 0) / values.gusts.length,
+    );
+    const averageDirectionDegrees = roundToWholeNumber(
+      values.directions.reduce((sum, value) => sum + value, 0) / values.directions.length,
     );
     const advice = getKiteAdvice(averageWindKnots);
     const weekend = isWeekend(date);
@@ -120,6 +166,10 @@ export function mapForecast(response: OpenMeteoResponse): ForecastDay[] {
       shortLabel: date,
       weekend,
       averageWindKnots,
+      averageGustKnots,
+      averageDirectionDegrees,
+      directionLabel: degreesToCompass(averageDirectionDegrees),
+      confidenceLabel: getConfidenceLabel(dayIndex),
       advice,
     };
   });

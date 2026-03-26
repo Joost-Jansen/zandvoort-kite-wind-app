@@ -15,7 +15,9 @@ function escapeText(value: string) {
   return value.replaceAll("\\", "\\\\").replaceAll(";", "\\;").replaceAll(",", "\\,").replaceAll("\n", "\\n");
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const mode = searchParams.get("mode");
   const forecast = await getZandvoortForecast();
   const kiteDays = getFavorableDays(forecast);
   const stamp = new Date().toISOString().replaceAll("-", "").replaceAll(":", "").replace(/\.\d{3}Z$/, "Z");
@@ -54,8 +56,12 @@ export async function GET() {
   return new Response(body, {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
-      "Content-Disposition": 'attachment; filename="zandvoort-kite-days.ics"',
       "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+      ...(mode === "feed"
+        ? {}
+        : {
+            "Content-Disposition": 'attachment; filename="zandvoort-kite-days.ics"',
+          }),
     },
   });
 }

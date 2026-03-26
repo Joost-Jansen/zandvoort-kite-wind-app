@@ -3,6 +3,8 @@ import Link from "next/link";
 import type { ForecastDay } from "@/lib/kite";
 import { getZandvoortForecast } from "@/lib/open-meteo";
 
+import { CalendarTools } from "./calendar-tools";
+
 function formatWind(value: number) {
   return `${value.toFixed(1)} kn`;
 }
@@ -47,6 +49,10 @@ export default async function HomePage() {
   );
   const nextKiteDay = favorableDays[0];
   const favorableWeekends = favorableDays.filter((day) => day.weekend).length;
+  const gustiestDay = forecast.reduce((best, day) =>
+    day.averageGustKnots > best.averageGustKnots ? day : best,
+  );
+  const bestWeekendDay = favorableDays.find((day) => day.weekend);
 
   return (
     <main className="page-shell">
@@ -83,6 +89,7 @@ export default async function HomePage() {
           <Link className="primary-button" href="/api/kite-days">
             Export kite days as .ics
           </Link>
+          <CalendarTools />
           <div className="hero-stats">
             <div>
               <span>Kiteable days</span>
@@ -98,7 +105,8 @@ export default async function HomePage() {
             </div>
           </div>
           <p className="microcopy">
-            Apple Calendar compatible download for days averaging at least 15 kn.
+            Apple Calendar download plus a feed URL you can paste into Google Calendar's
+            "Add by URL" flow.
           </p>
         </div>
       </section>
@@ -125,6 +133,66 @@ export default async function HomePage() {
             The export includes only kite-worthy days, so the `.ics` file stays
             focused on realistic session candidates instead of all forecast days.
           </p>
+        </article>
+        <article className="insight-card">
+          <span className="insight-label">Google Calendar</span>
+          <p>
+            Use the copied feed URL in Google Calendar under "Add calendar" and
+            then "From URL" to subscribe instead of importing manually each time.
+          </p>
+        </article>
+      </section>
+
+      <section className="planning-grid" aria-label="planning extras">
+        <article className="planning-card planning-card-map">
+          <div className="section-header compact-header">
+            <div>
+              <p className="section-eyebrow">Beach map</p>
+              <h2>Zandvoort at a glance.</h2>
+            </div>
+          </div>
+          <div className="map-frame-wrap">
+            <iframe
+              className="map-frame"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              src="https://www.openstreetmap.org/export/embed.html?bbox=4.4855%2C52.3545%2C4.5755%2C52.3945&layer=mapnik&marker=52.3745%2C4.5305"
+              title="Map of Zandvoort aan Zee"
+            />
+          </div>
+          <p className="section-note map-note">
+            Marker is centered on the forecast spot. Use this as a quick location anchor
+            when sharing the planning page with riders.
+          </p>
+        </article>
+
+        <article className="planning-card">
+          <p className="section-eyebrow">Wind intelligence</p>
+          <h2>What stands out in this run.</h2>
+          <div className="mini-stat-list">
+            <div>
+              <span>Strongest gust profile</span>
+              <strong>
+                {gustiestDay.label} • {formatWind(gustiestDay.averageGustKnots)} gusts
+              </strong>
+            </div>
+            <div>
+              <span>Prevailing direction next session</span>
+              <strong>
+                {nextKiteDay
+                  ? `${nextKiteDay.directionLabel} • ${nextKiteDay.averageDirectionDegrees}°`
+                  : `${bestDay.directionLabel} • ${bestDay.averageDirectionDegrees}°`}
+              </strong>
+            </div>
+            <div>
+              <span>Best weekend shot</span>
+              <strong>
+                {bestWeekendDay
+                  ? `${bestWeekendDay.label} • ${formatWind(bestWeekendDay.averageWindKnots)}`
+                  : "No kiteable weekend day in this run"}
+              </strong>
+            </div>
+          </div>
         </article>
       </section>
 
@@ -172,8 +240,22 @@ export default async function HomePage() {
                       <dd>{formatWind(day.averageWindKnots)}</dd>
                     </div>
                     <div>
+                      <dt>Average gusts</dt>
+                      <dd>{formatWind(day.averageGustKnots)}</dd>
+                    </div>
+                    <div>
+                      <dt>Prevailing direction</dt>
+                      <dd>
+                        {day.directionLabel} • {day.averageDirectionDegrees}°
+                      </dd>
+                    </div>
+                    <div>
                       <dt>Kite advice</dt>
                       <dd>{day.advice.label}</dd>
+                    </div>
+                    <div>
+                      <dt>Planning confidence</dt>
+                      <dd>{day.confidenceLabel}</dd>
                     </div>
                   </dl>
 
@@ -211,6 +293,43 @@ export default async function HomePage() {
               Instead of showing raw API output only, the interface translates it
               into a planning view: likely days, weekend opportunities, and a
               calendar export.
+            </p>
+          </article>
+          <article>
+            <h3>Direction and gust context</h3>
+            <p>
+              Daily cards now include average gusts and a prevailing wind direction,
+              making the forecast more useful for deciding whether a day is merely
+              windy or actually workable on the beach.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className="methodology-panel" aria-label="calendar integration help">
+        <div>
+          <p className="section-eyebrow">Calendar workflow</p>
+          <h2>How to get this into your planning tools.</h2>
+        </div>
+        <div className="method-grid">
+          <article>
+            <h3>Apple Calendar</h3>
+            <p>
+              Use the `.ics` export button for a quick one-off import of kite-worthy days.
+            </p>
+          </article>
+          <article>
+            <h3>Google Calendar</h3>
+            <p>
+              Copy the feed URL, then in Google Calendar choose "Add calendar" and
+              "From URL" to subscribe to the live feed.
+            </p>
+          </article>
+          <article>
+            <h3>Sharing with friends</h3>
+            <p>
+              Send the live site link so other riders can inspect the wind window,
+              map location, and export or subscribe from their own calendar account.
             </p>
           </article>
         </div>

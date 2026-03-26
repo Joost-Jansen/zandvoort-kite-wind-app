@@ -137,6 +137,41 @@ a {
   box-shadow: 0 14px 30px rgba(255, 148, 102, 0.25);
 }
 
+.secondary-button,
+.ghost-button {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 0.9rem 1rem;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+.secondary-button {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.ghost-button {
+  border: 1px dashed rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.secondary-button:hover,
+.ghost-button:hover {
+  transform: translateY(-1px);
+}
+
+.calendar-tools {
+  display: grid;
+  gap: 0.7rem;
+}
+
 .primary-button:hover {
   transform: translateY(-1px);
 }
@@ -164,9 +199,70 @@ a {
 
 .insight-strip {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
   margin-top: 1.6rem;
+}
+
+.planning-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: 1rem;
+  margin-top: 1.6rem;
+}
+
+.planning-card {
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(244, 235, 216, 0.72));
+  box-shadow: var(--shadow);
+}
+
+.compact-header {
+  margin-bottom: 0.8rem;
+}
+
+.map-frame-wrap {
+  overflow: hidden;
+  border-radius: 22px;
+  border: 1px solid rgba(18, 52, 59, 0.08);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.map-frame {
+  width: 100%;
+  height: 360px;
+  border: 0;
+}
+
+.map-note {
+  max-width: none;
+}
+
+.mini-stat-list {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.mini-stat-list div {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.9rem 1rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.mini-stat-list span {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(18, 52, 59, 0.6);
+}
+
+.mini-stat-list strong {
+  font-size: 1rem;
 }
 
 .insight-card,
@@ -342,6 +438,7 @@ a {
 .card-meta {
   display: grid;
   gap: 0.85rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .card-meta dt {
@@ -398,6 +495,7 @@ a {
   }
 
   .insight-strip,
+  .planning-grid,
   .method-grid,
   .hero-stats,
   .section-header {
@@ -407,6 +505,10 @@ a {
   .section-header {
     display: grid;
     align-items: start;
+  }
+
+  .planning-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -435,5 +537,13 @@ a {
 
   .forecast-card {
     flex-basis: 220px;
+  }
+
+  .card-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .map-frame {
+    height: 280px;
   }
 }
