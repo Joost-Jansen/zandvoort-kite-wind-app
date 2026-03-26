@@ -81,16 +81,51 @@ a {
 .hero-actions {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 1rem;
   padding: 1.25rem;
   border-radius: 24px;
   background: linear-gradient(180deg, rgba(18, 52, 59, 0.92), rgba(29, 73, 85, 0.92));
   color: white;
 }
 
+.hero-highlights {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1.25rem;
+}
+
+.highlight-pill {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(18, 52, 59, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.highlight-pill span,
+.hero-stats span,
+.insight-label,
+.section-eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.highlight-pill span,
+.section-eyebrow {
+  color: rgba(18, 52, 59, 0.64);
+}
+
+.highlight-pill strong,
+.hero-stats strong {
+  font-size: 1rem;
+}
+
 .primary-button {
   display: inline-flex;
-  width: fit-content;
+  width: 100%;
   align-items: center;
   justify-content: center;
   padding: 0.95rem 1.2rem;
@@ -107,22 +142,105 @@ a {
 }
 
 .microcopy {
-  margin: 1rem 0 0;
-  max-width: 26ch;
+  margin: 0;
+  max-width: 32ch;
   color: rgba(255, 255, 255, 0.78);
   line-height: 1.6;
 }
 
-.forecast-grid {
+.hero-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.hero-stats div {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.85rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.insight-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
   margin-top: 1.6rem;
+}
+
+.insight-card,
+.methodology-panel {
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(244, 235, 216, 0.72));
+  box-shadow: var(--shadow);
+}
+
+.insight-card {
+  padding: 1.2rem;
+}
+
+.insight-card p,
+.method-grid p,
+.section-note {
+  margin: 0.75rem 0 0;
+  line-height: 1.7;
+  color: rgba(18, 52, 59, 0.78);
+}
+
+.forecast-section {
+  margin-top: 1.6rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.section-header h2,
+.methodology-panel h2 {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-heading), serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 0.95;
+}
+
+.section-note {
+  max-width: 38ch;
+}
+
+.forecast-scroller {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.6rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(18, 52, 59, 0.45) rgba(255, 255, 255, 0.45);
+}
+
+.forecast-scroller::-webkit-scrollbar {
+  height: 10px;
+}
+
+.forecast-scroller::-webkit-scrollbar-thumb {
+  background: rgba(18, 52, 59, 0.35);
+  border-radius: 999px;
+}
+
+.forecast-track {
+  display: flex;
+  gap: 1rem;
+  min-width: max-content;
 }
 
 .forecast-card {
   position: relative;
   overflow: hidden;
+  flex: 0 0 245px;
+  min-height: 100%;
   padding: 1.25rem;
   border: 1px solid var(--border);
   border-radius: 28px;
@@ -149,6 +267,10 @@ a {
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
+}
+
+.card-status-row {
+  margin-top: 1rem;
 }
 
 .day-label,
@@ -183,6 +305,33 @@ a {
   background: rgba(255, 148, 102, 0.16);
 }
 
+.signal-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.72rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.signal-pill.is-light {
+  background: rgba(18, 52, 59, 0.08);
+}
+
+.signal-pill.is-kiteable {
+  background: rgba(255, 194, 111, 0.28);
+}
+
+.signal-pill.is-powered {
+  background: rgba(104, 189, 166, 0.26);
+}
+
+.signal-pill.is-caution {
+  background: rgba(255, 148, 102, 0.28);
+}
+
 .wind-figure {
   margin: 1.4rem 0 1rem;
   font-family: var(--font-heading), serif;
@@ -210,9 +359,33 @@ a {
 
 .advice-detail {
   margin-top: 1rem;
-  max-width: 28ch;
+  max-width: 24ch;
   color: rgba(18, 52, 59, 0.8);
   line-height: 1.6;
+}
+
+.methodology-panel {
+  display: grid;
+  gap: 1.2rem;
+  margin-top: 1.6rem;
+  padding: 1.4rem;
+}
+
+.method-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.method-grid article {
+  padding: 1rem;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.method-grid h3 {
+  margin: 0;
+  font-size: 1rem;
 }
 
 @media (max-width: 860px) {
@@ -222,6 +395,18 @@ a {
 
   .hero-copy h1 {
     max-width: 12ch;
+  }
+
+  .insight-strip,
+  .method-grid,
+  .hero-stats,
+  .section-header {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header {
+    display: grid;
+    align-items: start;
   }
 }
 
@@ -246,5 +431,9 @@ a {
 
   .hero-copy h1 {
     font-size: clamp(2.8rem, 13vw, 4.3rem);
+  }
+
+  .forecast-card {
+    flex-basis: 220px;
   }
 }
