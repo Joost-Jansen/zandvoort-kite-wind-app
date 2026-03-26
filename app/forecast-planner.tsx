@@ -66,6 +66,17 @@ function getHeatStrengthClass(windKnots: number) {
   return "is-cool";
 }
 
+function getWindOverlayStyle(windKnots: number, directionDegrees: number) {
+  const normalizedStrength = Math.min(Math.max((windKnots - 8) / 20, 0.2), 1);
+  const streamLength = 120 + normalizedStrength * 140;
+
+  return {
+    "--wind-angle": `${directionDegrees}deg`,
+    "--wind-strength": `${normalizedStrength}`,
+    "--stream-length": `${streamLength}px`,
+  } as React.CSSProperties;
+}
+
 function buildMapEmbedUrl(location: KiteLocation) {
   const west = (location.longitude - 0.045).toFixed(4);
   const south = (location.latitude - 0.02).toFixed(4);
@@ -213,10 +224,18 @@ export function ForecastPlanner({ forecast, location, locations }: ForecastPlann
               src={buildMapEmbedUrl(location)}
               title={`Map of ${location.name}`}
             />
-            <div className="wind-overlay-lane" style={getDirectionArrowStyle(selectedHour.directionDegrees)} />
-            <div className="wind-overlay-core" />
-            <div className="wind-overlay-arrow" style={getDirectionArrowStyle(selectedHour.directionDegrees)}>
-              ↑
+            <div className="wind-overlay-vector" style={getWindOverlayStyle(selectedHour.windKnots, selectedHour.directionDegrees)}>
+              <div className="wind-overlay-ring" />
+              <div className="wind-overlay-cardinal north">N</div>
+              <div className="wind-overlay-cardinal east">E</div>
+              <div className="wind-overlay-cardinal south">S</div>
+              <div className="wind-overlay-cardinal west">W</div>
+              <div className="wind-overlay-stream stream-one">
+                <span className="wind-overlay-arrow">➜</span>
+              </div>
+              <div className="wind-overlay-stream stream-two" />
+              <div className="wind-overlay-stream stream-three" />
+              <div className="wind-overlay-core" />
             </div>
             <div className="wind-overlay-panel">
               <span>Selected wind slot</span>
@@ -224,6 +243,10 @@ export function ForecastPlanner({ forecast, location, locations }: ForecastPlann
               <p>
                 Gusts {formatWind(selectedHour.gustKnots)} • {selectedHour.directionLabel} {selectedHour.directionDegrees}°
               </p>
+            </div>
+            <div className="wind-overlay-legend">
+              <span>Map overlay</span>
+              <strong>{selectedHour.directionLabel} flow toward spot</strong>
             </div>
           </div>
 

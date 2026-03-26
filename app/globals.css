@@ -273,7 +273,7 @@ a {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04), transparent 60%);
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04), transparent 62%);
   pointer-events: none;
 }
 
@@ -295,45 +295,117 @@ a {
   border: 0;
 }
 
-.wind-overlay-lane {
+.wind-overlay-vector {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 44%;
-  height: 18px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), rgba(255, 148, 102, 0.22), rgba(18, 52, 59, 0.42));
-  transform-origin: left center;
+  inset: 0;
   pointer-events: none;
 }
 
-.wind-overlay-core {
+.wind-overlay-ring {
   position: absolute;
-  left: calc(50% - 16px);
-  top: calc(50% - 16px);
-  width: 32px;
-  height: 32px;
+  left: 50%;
+  top: 50%;
+  width: 200px;
+  height: 200px;
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(255, 194, 111, 0.95), rgba(255, 148, 102, 0.4));
-  box-shadow: 0 0 0 18px rgba(255, 148, 102, 0.12);
-  pointer-events: none;
+  border: 1px solid rgba(18, 52, 59, 0.18);
+  transform: translate(-50%, -50%);
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.12), transparent 58%),
+    linear-gradient(transparent calc(50% - 0.5px), rgba(18, 52, 59, 0.12) 0, transparent calc(50% + 0.5px)),
+    linear-gradient(90deg, transparent calc(50% - 0.5px), rgba(18, 52, 59, 0.12) 0, transparent calc(50% + 0.5px));
+}
+
+.wind-overlay-cardinal {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  color: rgba(18, 52, 59, 0.82);
+  font-size: 0.74rem;
+  font-weight: 700;
+  transform: translate(-50%, -50%);
+}
+
+.wind-overlay-cardinal.north {
+  left: 50%;
+  top: calc(50% - 112px);
+}
+
+.wind-overlay-cardinal.east {
+  left: calc(50% + 112px);
+  top: 50%;
+}
+
+.wind-overlay-cardinal.south {
+  left: 50%;
+  top: calc(50% + 112px);
+}
+
+.wind-overlay-cardinal.west {
+  left: calc(50% - 112px);
+  top: 50%;
+}
+
+.wind-overlay-stream {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--stream-length);
+  height: 16px;
+  border-radius: 999px;
+  transform: translate(-50%, -50%) rotate(var(--wind-angle));
+  transform-origin: center;
+}
+
+.wind-overlay-stream::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), rgba(255, 194, 111, 0.28), rgba(18, 52, 59, 0.45));
+}
+
+.wind-overlay-stream.stream-two {
+  width: calc(var(--stream-length) * 0.74);
+  opacity: 0.45;
+}
+
+.wind-overlay-stream.stream-three {
+  width: calc(var(--stream-length) * 0.48);
+  opacity: 0.25;
 }
 
 .wind-overlay-arrow {
   position: absolute;
-  left: calc(50% + 19% - 14px);
-  top: calc(50% - 14px);
+  right: -8px;
+  top: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 999px;
-  background: rgba(18, 52, 59, 0.9);
+  background: rgba(18, 52, 59, 0.92);
   color: white;
-  font-size: 1rem;
-  transform-origin: calc(-19vw) center;
-  pointer-events: none;
+  font-size: 0.95rem;
+  transform: translateY(-50%);
+}
+
+.wind-overlay-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(28px + (18px * var(--wind-strength)));
+  height: calc(28px + (18px * var(--wind-strength)));
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255, 194, 111, 0.96), rgba(255, 148, 102, 0.45));
+  box-shadow: 0 0 0 calc(12px + (14px * var(--wind-strength))) rgba(255, 148, 102, 0.12);
 }
 
 .wind-overlay-panel {
@@ -363,6 +435,30 @@ a {
 
 .wind-overlay-panel p {
   color: rgba(255, 255, 255, 0.84);
+}
+
+.wind-overlay-legend {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.82);
+  color: rgba(18, 52, 59, 0.88);
+  max-width: 16rem;
+}
+
+.wind-overlay-legend span {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(18, 52, 59, 0.56);
+}
+
+.wind-overlay-legend strong {
+  font-size: 0.9rem;
 }
 
 .hour-chip-row {
@@ -891,5 +987,32 @@ a {
     right: 0.75rem;
     left: 0.75rem;
     max-width: none;
+  }
+
+  .wind-overlay-legend {
+    left: 0.75rem;
+    right: auto;
+    top: 0.75rem;
+  }
+
+  .wind-overlay-ring {
+    width: 160px;
+    height: 160px;
+  }
+
+  .wind-overlay-cardinal.north {
+    top: calc(50% - 92px);
+  }
+
+  .wind-overlay-cardinal.east {
+    left: calc(50% + 92px);
+  }
+
+  .wind-overlay-cardinal.south {
+    top: calc(50% + 92px);
+  }
+
+  .wind-overlay-cardinal.west {
+    left: calc(50% - 92px);
   }
 }
