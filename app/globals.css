@@ -228,16 +228,143 @@ a {
 }
 
 .map-frame-wrap {
+  position: relative;
   overflow: hidden;
   border-radius: 22px;
   border: 1px solid rgba(18, 52, 59, 0.08);
   background: rgba(255, 255, 255, 0.5);
 }
 
+.map-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04), transparent 60%);
+  pointer-events: none;
+}
+
+.map-overlay.is-cool::after {
+  background: radial-gradient(circle at 50% 50%, rgba(115, 167, 193, 0.18), transparent 58%);
+}
+
+.map-overlay.is-warm::after {
+  background: radial-gradient(circle at 50% 50%, rgba(255, 194, 111, 0.24), transparent 58%);
+}
+
+.map-overlay.is-hot::after {
+  background: radial-gradient(circle at 50% 50%, rgba(255, 148, 102, 0.28), transparent 60%);
+}
+
 .map-frame {
   width: 100%;
   height: 360px;
   border: 0;
+}
+
+.wind-overlay-lane {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44%;
+  height: 18px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), rgba(255, 148, 102, 0.22), rgba(18, 52, 59, 0.42));
+  transform-origin: left center;
+  pointer-events: none;
+}
+
+.wind-overlay-core {
+  position: absolute;
+  left: calc(50% - 16px);
+  top: calc(50% - 16px);
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 194, 111, 0.95), rgba(255, 148, 102, 0.4));
+  box-shadow: 0 0 0 18px rgba(255, 148, 102, 0.12);
+  pointer-events: none;
+}
+
+.wind-overlay-arrow {
+  position: absolute;
+  left: calc(50% + 19% - 14px);
+  top: calc(50% - 14px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(18, 52, 59, 0.9);
+  color: white;
+  font-size: 1rem;
+  transform-origin: calc(-19vw) center;
+  pointer-events: none;
+}
+
+.wind-overlay-panel {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 18px;
+  background: rgba(18, 52, 59, 0.82);
+  color: white;
+  max-width: 18rem;
+}
+
+.wind-overlay-panel span {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.wind-overlay-panel strong,
+.wind-overlay-panel p {
+  margin: 0;
+}
+
+.wind-overlay-panel p {
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.hour-chip-row {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding-top: 0.9rem;
+}
+
+.hour-chip {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 92px;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgba(18, 52, 59, 0.08);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.54);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.hour-chip span {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(18, 52, 59, 0.58);
+}
+
+.hour-chip strong {
+  font-size: 0.96rem;
+}
+
+.hour-chip.is-active {
+  border-color: rgba(255, 148, 102, 0.34);
+  background: rgba(255, 194, 111, 0.28);
 }
 
 .map-note {
@@ -364,6 +491,18 @@ a {
   box-shadow: var(--shadow);
 }
 
+.forecast-card-button,
+.ranked-session-button {
+  border: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.forecast-card-button {
+  width: 100%;
+}
+
 .forecast-card::after {
   content: "";
   position: absolute;
@@ -381,6 +520,12 @@ a {
 .forecast-card.is-today {
   border-color: rgba(255, 148, 102, 0.34);
   box-shadow: 0 20px 60px rgba(255, 148, 102, 0.18);
+}
+
+.forecast-card.is-selected,
+.ranked-session.is-selected {
+  outline: 2px solid rgba(255, 148, 102, 0.42);
+  outline-offset: 0;
 }
 
 .card-header {
@@ -510,6 +655,15 @@ a {
   max-width: 24ch;
   color: rgba(18, 52, 59, 0.8);
   line-height: 1.6;
+}
+
+.card-cta {
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(18, 52, 59, 0.08);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(18, 52, 59, 0.66);
 }
 
 .hourly-breakdown {
@@ -697,5 +851,11 @@ a {
 
   .map-frame {
     height: 280px;
+  }
+
+  .wind-overlay-panel {
+    right: 0.75rem;
+    left: 0.75rem;
+    max-width: none;
   }
 }
