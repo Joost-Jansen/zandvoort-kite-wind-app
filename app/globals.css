@@ -317,6 +317,44 @@ a {
   z-index: 0;
 }
 
+.map-frame-loading {
+  background:
+    linear-gradient(180deg, rgba(74, 144, 226, 0.18), rgba(18, 72, 126, 0.3)),
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), transparent 30%),
+    rgba(221, 233, 238, 0.9);
+}
+
+.forecast-map {
+  background: #dbe7ee;
+}
+
+.forecast-map .leaflet-tile-pane {
+  filter: saturate(0.95) contrast(1.02);
+}
+
+.forecast-map .leaflet-control-container {
+  position: relative;
+  z-index: 1;
+}
+
+.forecast-map .leaflet-control-zoom {
+  border: 0;
+  box-shadow: 0 10px 26px rgba(18, 52, 59, 0.16);
+}
+
+.forecast-map .leaflet-control-zoom a {
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  border: 0;
+  color: var(--deep-water);
+}
+
+.forecast-map .leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(6px);
+}
+
 .wind-overlay-vector {
   position: absolute;
   inset: 0;

@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
@@ -8,6 +9,14 @@ import type { ForecastDay } from "@/lib/kite";
 import type { KiteLocation } from "@/lib/locations";
 
 import { CalendarTools } from "./calendar-tools";
+
+const ForecastMap = dynamic(
+  () => import("./forecast-map").then((module) => module.ForecastMap),
+  {
+    ssr: false,
+    loading: () => <div className="map-frame map-frame-loading" />,
+  },
+);
 
 type ForecastPlannerProps = {
   forecast: ForecastDay[];
@@ -124,15 +133,6 @@ function getWindOverlayStyle(windKnots: number, directionDegrees: number) {
   return overlayStyle;
 }
 
-function buildMapEmbedUrl(location: KiteLocation) {
-  const west = (location.longitude - 0.045).toFixed(4);
-  const south = (location.latitude - 0.02).toFixed(4);
-  const east = (location.longitude + 0.045).toFixed(4);
-  const north = (location.latitude + 0.02).toFixed(4);
-
-  return `https://www.openstreetmap.org/export/embed.html?bbox=${west}%2C${south}%2C${east}%2C${north}&layer=mapnik&marker=${location.latitude}%2C${location.longitude}`;
-}
-
 export function ForecastPlanner({ forecast, location, locations, spotRankings }: ForecastPlannerProps) {
   const favorableDays = useMemo(() => forecast.filter((day) => day.advice.favorable), [forecast]);
   const rankedDays = useMemo(
@@ -243,13 +243,7 @@ export function ForecastPlanner({ forecast, location, locations, spotRankings }:
           </div>
 
           <div className={`map-frame-wrap map-overlay ${getHeatStrengthClass(selectedHour.windKnots)}`}>
-            <iframe
-              className="map-frame"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              src={buildMapEmbedUrl(location)}
-              title={`Map of ${location.name}`}
-            />
+            <ForecastMap location={location} />
             <div className="wind-overlay-vector" style={getWindOverlayStyle(selectedHour.windKnots, selectedHour.directionDegrees)}>
               <div className="wind-overlay-tint" />
               <div className="wind-heat-layer">
