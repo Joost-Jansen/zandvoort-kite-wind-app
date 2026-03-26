@@ -4,11 +4,14 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import type { ForecastDay } from "@/lib/kite";
+import type { KiteLocation } from "@/lib/locations";
 
 import { CalendarTools } from "./calendar-tools";
 
 type ForecastPlannerProps = {
   forecast: ForecastDay[];
+  location: KiteLocation;
+  locations: KiteLocation[];
 };
 
 function formatWind(value: number) {
@@ -63,7 +66,16 @@ function getHeatStrengthClass(windKnots: number) {
   return "is-cool";
 }
 
-export function ForecastPlanner({ forecast }: ForecastPlannerProps) {
+function buildMapEmbedUrl(location: KiteLocation) {
+  const west = (location.longitude - 0.045).toFixed(4);
+  const south = (location.latitude - 0.02).toFixed(4);
+  const east = (location.longitude + 0.045).toFixed(4);
+  const north = (location.latitude + 0.02).toFixed(4);
+
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${west}%2C${south}%2C${east}%2C${north}&layer=mapnik&marker=${location.latitude}%2C${location.longitude}`;
+}
+
+export function ForecastPlanner({ forecast, location, locations }: ForecastPlannerProps) {
   const favorableDays = useMemo(() => forecast.filter((day) => day.advice.favorable), [forecast]);
   const rankedDays = useMemo(
     () => [...forecast].sort((left, right) => right.averageWindKnots - left.averageWindKnots).slice(0, 3),
@@ -96,12 +108,25 @@ export function ForecastPlanner({ forecast }: ForecastPlannerProps) {
     <main className="page-shell">
       <section className="hero-panel">
         <div className="hero-copy">
-          <p className="eyebrow">Zandvoort aan Zee • 52.3745, 4.5305</p>
-          <h1>14-day kite wind window for the Dutch coast.</h1>
+          <p className="eyebrow">{location.name} • {location.latitude}, {location.longitude}</p>
+          <h1>Dutch kite forecast planner.</h1>
           <p className="hero-text">
             Average daytime wind is calculated from 09:00 through 18:00 using Open-Meteo data in knots.
-            Select any day and hour below to project that wind slot directly onto the beach map.
+            Switch between Dutch kite spots, then select any day and hour below to project that wind slot directly onto the beach map.
           </p>
+
+          <div className="location-switcher" aria-label="Dutch kite locations">
+            {locations.map((candidate) => (
+              <Link
+                className={`location-chip ${candidate.slug === location.slug ? "is-active" : ""}`}
+                href={`/?location=${candidate.slug}`}
+                key={candidate.slug}
+              >
+                <span>{candidate.shortName}</span>
+                <strong>{candidate.region}</strong>
+              </Link>
+            ))}
+          </div>
 
           <div className="hero-highlights">
             <div className="highlight-pill">
@@ -120,10 +145,10 @@ export function ForecastPlanner({ forecast }: ForecastPlannerProps) {
         </div>
 
         <div className="hero-actions">
-          <Link className="primary-button" href="/api/kite-days">
+          <Link className="primary-button" href={`/api/kite-days?location=${location.slug}`}>
             Export kite days as .ics
           </Link>
-          <CalendarTools />
+          <CalendarTools locationSlug={location.slug} />
           <div className="hero-stats">
             <div>
               <span>Kiteable days</span>
@@ -176,7 +201,7 @@ export function ForecastPlanner({ forecast }: ForecastPlannerProps) {
           <div className="section-header compact-header">
             <div>
               <p className="section-eyebrow">Selected session map</p>
-              <h2>{selectedDay.label} at {selectedHour.time}</h2>
+              <h2>{location.shortName} • {selectedDay.label} at {selectedHour.time}</h2>
             </div>
           </div>
 
@@ -185,8 +210,8 @@ export function ForecastPlanner({ forecast }: ForecastPlannerProps) {
               className="map-frame"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              src="https://www.openstreetmap.org/export/embed.html?bbox=4.4855%2C52.3545%2C4.5755%2C52.3945&layer=mapnik&marker=52.3745%2C4.5305"
-              title="Map of Zandvoort aan Zee"
+              src={buildMapEmbedUrl(location)}
+              title={`Map of ${location.name}`}
             />
             <div className="wind-overlay-lane" style={getDirectionArrowStyle(selectedHour.directionDegrees)} />
             <div className="wind-overlay-core" />
@@ -217,7 +242,7 @@ export function ForecastPlanner({ forecast }: ForecastPlannerProps) {
           </div>
 
           <p className="section-note map-note">
-            This is a point-based wind visualization for the selected Zandvoort spot, derived from Open-Meteo hourly forecast data.
+            This is a point-based wind visualization for the selected {location.name} spot, derived from Open-Meteo hourly forecast data.
           </p>
         </article>
 
@@ -396,7 +421,7 @@ export function ForecastPlanner({ forecast }: ForecastPlannerProps) {
           <article>
             <h3>Point-based map overlay</h3>
             <p>
-              The map overlay reflects the selected Zandvoort point forecast. It is not a regional wind field heatmap, but it does visualize direction and intensity for the chosen slot.
+              The map overlay reflects the selected Dutch spot point forecast. It is not a regional wind field heatmap, but it does visualize direction and intensity for the chosen slot.
             </p>
           </article>
           <article>

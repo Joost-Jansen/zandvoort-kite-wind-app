@@ -1,5 +1,6 @@
 import { getFavorableDays } from "@/lib/kite";
-import { getZandvoortForecast } from "@/lib/open-meteo";
+import { getLocationBySlug } from "@/lib/locations";
+import { getForecastForLocation } from "@/lib/open-meteo";
 
 function formatCalendarDate(date: string) {
   return date.replaceAll("-", "");
@@ -18,20 +19,21 @@ function escapeText(value: string) {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const mode = searchParams.get("mode");
-  const forecast = await getZandvoortForecast();
+  const location = getLocationBySlug(searchParams.get("location"));
+  const forecast = await getForecastForLocation(location);
   const kiteDays = getFavorableDays(forecast);
   const stamp = new Date().toISOString().replaceAll("-", "").replaceAll(":", "").replace(/\.\d{3}Z$/, "Z");
 
   const events = kiteDays
     .map((day) => {
-      const summary = escapeText("Kite day in Zandvoort");
+      const summary = escapeText(`Kite day in ${location.shortName}`);
       const description = escapeText(
-        `Average daytime wind: ${day.averageWindKnots.toFixed(1)} kn\nAdvice: ${day.advice.label}`,
+        `Location: ${location.name}\nAverage daytime wind: ${day.averageWindKnots.toFixed(1)} kn\nAdvice: ${day.advice.label}`,
       );
 
       return [
         "BEGIN:VEVENT",
-        `UID:${day.date}@zandvoort-kite-wind`,
+        `UID:${day.date}@${location.slug}-kite-wind`,
         `DTSTAMP:${stamp}`,
         `DTSTART;VALUE=DATE:${formatCalendarDate(day.date)}`,
         `DTEND;VALUE=DATE:${nextDate(day.date)}`,
@@ -45,7 +47,7 @@ export async function GET(request: Request) {
   const body = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Zandvoort Kite Wind//EN",
+    "PRODID:-//Dutch Kite Forecast Planner//EN",
     "CALSCALE:GREGORIAN",
     events,
     "END:VCALENDAR",
@@ -60,7 +62,7 @@ export async function GET(request: Request) {
       ...(mode === "feed"
         ? {}
         : {
-            "Content-Disposition": 'attachment; filename="zandvoort-kite-days.ics"',
+            "Content-Disposition": `attachment; filename="${location.slug}-kite-days.ics"`,
           }),
     },
   });

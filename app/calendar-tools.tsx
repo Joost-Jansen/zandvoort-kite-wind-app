@@ -4,11 +4,11 @@ import { useState } from "react";
 
 const GOOGLE_CALENDAR_ADD_BY_URL = "https://calendar.google.com/calendar/u/0/r/settings/addbyurl";
 
-export function CalendarTools() {
+export function CalendarTools({ locationSlug }: { locationSlug: string }) {
   const [copyLabel, setCopyLabel] = useState("Copy calendar feed URL");
 
   async function copyFeedUrl() {
-    const feedUrl = `${window.location.origin}/api/kite-days?mode=feed`;
+    const feedUrl = `${window.location.origin}/api/kite-days?mode=feed&location=${locationSlug}`;
     await navigator.clipboard.writeText(feedUrl);
     setCopyLabel("Feed URL copied");
     window.setTimeout(() => setCopyLabel("Copy calendar feed URL"), 2000);

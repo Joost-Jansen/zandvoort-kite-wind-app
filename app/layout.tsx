@@ -15,8 +15,8 @@ const bodyFont = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Zandvoort Kite Wind",
-  description: "Seven-day kite wind outlook for Zandvoort aan Zee with Apple Calendar export.",
+  title: "Dutch Kite Forecast Planner",
+  description: "Multi-location kite forecast planner for Dutch spots with calendar export, map overlay, and wind insights.",
 };
 
 export default function RootLayout({
